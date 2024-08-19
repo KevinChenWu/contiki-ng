@@ -47,6 +47,7 @@
 #define RPL_MOP_STORING_NO_MULTICAST    2
 #define RPL_MOP_STORING_MULTICAST       3
 
+#define RPL_CONF_MOP RPL_MOP_NON_STORING
 /* RPL Mode of operation */
 #ifdef  RPL_CONF_MOP
 #define RPL_MOP_DEFAULT                 RPL_CONF_MOP

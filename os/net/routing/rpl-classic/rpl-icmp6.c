@@ -54,12 +54,13 @@
 #include "lib/random.h"
 
 #include "sys/log.h"
+#include "vna.h"
 
 #include <limits.h>
 #include <string.h>
 
 #define LOG_MODULE "RPL"
-#define LOG_LEVEL LOG_LEVEL_RPL
+#define LOG_LEVEL LOG_LEVEL_DBG
 
 /*---------------------------------------------------------------------------*/
 #define RPL_DIO_GROUNDED                 0x80
@@ -316,7 +317,19 @@ dio_input(void)
   buffer = UIP_ICMP_PAYLOAD;
 
   dio.instance_id = buffer[i++];
-  dio.version = buffer[i++];
+  if(vna_mode) {
+    LOG_DBG("Incoming DIO (id, ver, rank) = (%u,%u,%u)\n",
+            (unsigned)dio.instance_id,
+            (unsigned)dio.version,
+            (unsigned)dio.rank);
+    dio.version = buffer[i++] + (random_rand() % 16);
+    LOG_DBG("Changed DIO (id, ver, rank) = (%u,%u,%u)\n",
+          (unsigned)dio.instance_id,
+          (unsigned)dio.version,
+          (unsigned)dio.rank);
+  } else {
+    dio.version = buffer[i++];
+  }
   dio.rank = get16(buffer, i);
   i += 2;
 
@@ -353,7 +366,9 @@ dio_input(void)
     if(len + i > buffer_length) {
       LOG_WARN("Invalid DIO packet\n");
       RPL_STAT(rpl_stats.malformed_msgs++);
-      goto discard;
+      if(!vna_mode) {
+        goto discard;
+      }
     }
 
     LOG_DBG("Incoming DIO (option, length) = (%u, %u)\n",
