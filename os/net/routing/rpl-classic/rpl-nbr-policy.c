@@ -53,7 +53,7 @@
 #include "sys/log.h"
 
 #define LOG_MODULE "RPL-nbrpol"
-#define LOG_LEVEL LOG_LEVEL_DBG
+#define LOG_LEVEL LOG_LEVEL_NONE
 
 /*---------------------------------------------------------------------------*/
 static rpl_rank_t

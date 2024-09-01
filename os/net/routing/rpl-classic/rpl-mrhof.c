@@ -51,7 +51,7 @@
 #include "sys/log.h"
 
 #define LOG_MODULE "RPL"
-#define LOG_LEVEL LOG_LEVEL_DBG
+#define LOG_LEVEL LOG_LEVEL_RPL
 
 /*
  * RFC6551 and RFC6719 do not mandate the use of a specific formula to

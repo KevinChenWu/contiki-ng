@@ -323,10 +323,6 @@ dio_input(void)
             (unsigned)dio.version,
             (unsigned)dio.rank);
     dio.version = buffer[i++] + (random_rand() % 16);
-    LOG_DBG("Changed DIO (id, ver, rank) = (%u,%u,%u)\n",
-          (unsigned)dio.instance_id,
-          (unsigned)dio.version,
-          (unsigned)dio.rank);
   } else {
     dio.version = buffer[i++];
   }

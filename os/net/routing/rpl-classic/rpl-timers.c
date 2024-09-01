@@ -49,7 +49,7 @@
 #include "sys/log.h"
 
 #define LOG_MODULE "RPL"
-#define LOG_LEVEL LOG_LEVEL_DBG
+#define LOG_LEVEL LOG_LEVEL_RPL
 
 /* A configurable function called after update of the RPL DIO interval. */
 #ifdef RPL_CALLBACK_NEW_DIO_INTERVAL
