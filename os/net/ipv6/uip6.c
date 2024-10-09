@@ -841,11 +841,6 @@ ext_hdr_options_process(uint8_t *ext_buf)
     }
 
     switch(opt_hdr->type) {
-    /*
-     * for now we do not support any options except padding ones
-     * PAD1 does not make sense as the header must be 8bytes aligned,
-     * hence we can only have
-     */
     case UIP_EXT_HDR_OPT_PAD1:
       LOG_DBG("Processing PAD1 option\n");
       opt_offset += 1;
@@ -1423,7 +1418,16 @@ uip_process(uint8_t flag)
             goto send;
           }
 
-          LOG_INFO("Forwarding packet to next hop, dest: ");
+          if(uip_ds6_is_my_addr(&UIP_IP_BUF->destipaddr) ||
+             uip_ds6_is_my_maddr(&UIP_IP_BUF->destipaddr) ||
+             uip_is_addr_mcast(&UIP_IP_BUF->destipaddr) ||
+             uip_is_addr_unspecified(&UIP_IP_BUF->destipaddr) ||
+             uip_is_addr_loopback(&UIP_IP_BUF->destipaddr)) {
+            LOG_ERR("SRH next hop address is unacceptable; drop the packet\n");
+            goto bad_hdr;
+          }
+
+          LOG_INFO("Forwarding packet to next hop ");
           LOG_INFO_6ADDR(&UIP_IP_BUF->destipaddr);
           LOG_INFO_("\n");
           UIP_STAT(++uip_stat.ip.forwarded);
