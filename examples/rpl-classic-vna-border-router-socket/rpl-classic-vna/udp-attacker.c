@@ -19,7 +19,7 @@
 
 static struct simple_udp_connection udp_conn;
 static uint32_t rx_count = 0;
-uint8_t vna_mode = 0x01;
+uint8_t vna_mode = 0;
 
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_client_process, "UDP attacker");
@@ -47,10 +47,13 @@ udp_rx_callback(struct simple_udp_connection *c,
 PROCESS_THREAD(udp_client_process, ev, data)
 {
   static struct etimer periodic_timer;
+  static struct stimer attack_timer;
   static char str[32];
   uip_ipaddr_t dest_ipaddr;
+  uip_ipaddr_t server_ipaddr;
   static uint32_t tx_count;
   static uint32_t missed_tx_count;
+  static uint32_t temperature;
 
   PROCESS_BEGIN();
 
@@ -59,6 +62,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
                       UDP_SERVER_PORT, udp_rx_callback);
 
   etimer_set(&periodic_timer, random_rand() % SEND_INTERVAL);
+  stimer_set(&attack_timer, 300);
   while(1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
 
@@ -71,13 +75,28 @@ PROCESS_THREAD(udp_client_process, ev, data)
                  tx_count, rx_count, missed_tx_count);
       }
 
+      if(stimer_expired(&attack_timer)) {
+        uint8_t pre_vna_mode = vna_mode;
+        vna_mode = vna_mode ^ 1;
+        stimer_reset(&attack_timer);
+        LOG_INFO("Changing operation mode of attacker node from %" PRIu8 " to %" PRIu8 "\n", pre_vna_mode, vna_mode);
+      }
+      
       /* Send to DAG root */
+      uip_ip6addr(&server_ipaddr, 0xfd00, 0, 0, 0, 0, 0, 0, 1);
       LOG_INFO("Sending request %"PRIu32" to ", tx_count);
-      LOG_INFO_6ADDR(&dest_ipaddr);
+      LOG_INFO_6ADDR(&server_ipaddr);
       LOG_INFO_("\n");
       snprintf(str, sizeof(str), "hello %" PRIu32 "", tx_count);
-      simple_udp_sendto(&udp_conn, str, strlen(str), &dest_ipaddr);
+      simple_udp_sendto(&udp_conn, str, strlen(str), &server_ipaddr);
       tx_count++;
+      temperature = 21 + (random_rand() % (29 - 21 + 1));
+      uip_ip6addr(&server_ipaddr, 0xfd80, 0, 0, 0, 0, 0, 0, 1);
+      LOG_INFO("Sending data (temperature: %"PRIu32" °C) to ", temperature);
+      LOG_INFO_6ADDR(&server_ipaddr);
+      LOG_INFO_("\n");
+      snprintf(str, sizeof(str), "temperature: %" PRIu32 " °C", temperature);
+      simple_udp_sendto(&udp_conn, str, strlen(str), &server_ipaddr);
     } else {
       LOG_INFO("Not reachable yet\n");
       if(tx_count > 0) {

@@ -766,6 +766,7 @@ ifconf(const char *tundev, const char *ipaddr)
   ssystem("ifconfig %s inet `hostname` mtu %d up", tundev, devmtu);
   if (timestamp) stamptime();
   ssystem("ifconfig %s add %s", tundev, ipaddr);
+  ssystem("ifconfig %s add %s", tundev, "fd80::1/64");
 
 /* radvd needs a link local address for routing */
 #if 0

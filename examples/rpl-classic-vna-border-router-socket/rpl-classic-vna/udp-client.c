@@ -52,6 +52,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
   uip_ipaddr_t server_ipaddr;
   static uint32_t tx_count;
   static uint32_t missed_tx_count;
+  static uint32_t temperature;
 
   PROCESS_BEGIN();
 
@@ -80,6 +81,13 @@ PROCESS_THREAD(udp_client_process, ev, data)
       snprintf(str, sizeof(str), "hello %" PRIu32 "", tx_count);
       simple_udp_sendto(&udp_conn, str, strlen(str), &server_ipaddr);
       tx_count++;
+      temperature = 21 + (random_rand() % (29 - 21 + 1));
+      uip_ip6addr(&server_ipaddr, 0xfd80, 0, 0, 0, 0, 0, 0, 1);
+      LOG_INFO("Sending data (temperature: %"PRIu32" °C) to ", temperature);
+      LOG_INFO_6ADDR(&server_ipaddr);
+      LOG_INFO_("\n");
+      snprintf(str, sizeof(str), "temperature: %" PRIu32 " °C", temperature);
+      simple_udp_sendto(&udp_conn, str, strlen(str), &server_ipaddr);
     } else {
       LOG_INFO("Not reachable yet\n");
       if(tx_count > 0) {
