@@ -43,6 +43,9 @@
 #include "lib/random.h"
 #include <string.h>
 
+#include "vna.h"
+#include <stdlib.h>
+
 #include "sys/log.h"
 #define LOG_MODULE "Frame 15.4"
 #define LOG_LEVEL LOG_LEVEL_FRAMER
@@ -243,6 +246,41 @@ parse(void)
     }
 #endif /* LLSEC802154_USES_AUX_HEADER */
 
+    #ifndef NO_FEATURES
+      if (FRAME_LEN) {
+        char* tmp = malloc(FRAME_LEN_SZ);
+        snprintf(tmp, FRAME_LEN_SZ, "%03d", packetbuf_totlen()+2);
+        LOG_DBG("frame.len: %s\n", tmp);
+        memcpy(&features[FRAME_LEN_IDX], tmp, strlen(tmp));
+        free(tmp);
+        char* flag_tmp = malloc(FRAME_LEN_FLG_SZ);
+        snprintf(flag_tmp, FRAME_LEN_FLG_SZ, "%X", hex_to_bin(features[FRAME_LEN_FLG_IDX]) | FRAME_LEN_FLG_MSK);
+        memcpy(&features[FRAME_LEN_FLG_IDX], flag_tmp, strlen(flag_tmp));
+        free(flag_tmp);
+      }
+      if (WPAN_SEQ_NO) {
+        char* tmp = malloc(WPAN_SEQ_NO_SZ);
+        snprintf(tmp, WPAN_SEQ_NO_SZ, "%03d", packetbuf_attr(PACKETBUF_ATTR_MAC_SEQNO));
+        LOG_DBG("wpan.seq_no: %s\n", tmp);
+        memcpy(&features[WPAN_SEQ_NO_IDX], tmp, strlen(tmp));
+        free(tmp);
+        char* flag_tmp = malloc(WPAN_SEQ_NO_FLG_SZ);
+        snprintf(flag_tmp, WPAN_SEQ_NO_FLG_SZ, "%X", hex_to_bin(features[WPAN_SEQ_NO_FLG_IDX]) | WPAN_SEQ_NO_FLG_MSK);
+        memcpy(&features[WPAN_SEQ_NO_FLG_IDX], flag_tmp, strlen(flag_tmp));
+        free(flag_tmp);
+      }
+      if (WPAN_ACK_REQUEST) {
+        char* tmp = malloc(WPAN_ACK_REQUEST_SZ);
+        snprintf(tmp, WPAN_ACK_REQUEST_SZ, "%d", packetbuf_attr(PACKETBUF_ATTR_MAC_ACK));
+        LOG_DBG("wpan.ack_request: %s\n", tmp);
+        memcpy(&features[WPAN_ACK_REQUEST_IDX], tmp, strlen(tmp));
+        free(tmp);
+        char* flag_tmp = malloc(WPAN_ACK_REQUEST_FLG_SZ);
+        snprintf(flag_tmp, WPAN_ACK_REQUEST_FLG_SZ, "%X", hex_to_bin(features[WPAN_ACK_REQUEST_FLG_IDX]) | WPAN_ACK_REQUEST_FLG_MSK);
+        memcpy(&features[WPAN_ACK_REQUEST_FLG_IDX], flag_tmp, strlen(flag_tmp));
+        free(flag_tmp);
+      }
+    #endif
     LOG_INFO("In: %2X ", frame.fcf.frame_type);
     LOG_INFO_LLADDR(packetbuf_addr(PACKETBUF_ADDR_SENDER));
     LOG_INFO_(" ");

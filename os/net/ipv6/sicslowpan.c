@@ -75,6 +75,9 @@
 #include "net/queuebuf.h"
 
 #include "net/routing/routing.h"
+#include "net/ipv6/uiplib.h"
+#include "vna.h"
+#include <stdlib.h>
 
 /* Log configuration */
 #include "sys/log.h"
@@ -609,7 +612,7 @@ compress_addr_64(uint8_t bitpos, uip_ipaddr_t *ipaddr,
  */
 static bool
 uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
-                uint8_t pref_post_count, uip_lladdr_t *lladdr)
+                uint8_t pref_post_count, uip_lladdr_t *lladdr, int src_flag)
 {
   uint8_t prefcount = pref_post_count >> 4;
   uint8_t postcount = pref_post_count & 0x0f;
@@ -642,6 +645,33 @@ uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
     /* no IID based configuration if no prefix and no data => unspec */
     uip_ds6_set_addr_iid(ipaddr, lladdr);
   }
+  #ifndef NO_FEATURES
+    if (src_flag) {
+      if (SIXLOWPAN_SRC) {
+        char* tmp = malloc(SIXLOWPAN_SRC_SZ);
+        uiplib_ipaddr_snprint(tmp, SIXLOWPAN_SRC_SZ, ipaddr);
+        LOG_DBG("6lowpan.src: %s\n", tmp);
+        memcpy(&features[SIXLOWPAN_SRC_IDX], tmp, strlen(tmp));
+        free(tmp);
+        char* flag_tmp = malloc(SIXLOWPAN_SRC_FLG_SZ);
+        snprintf(flag_tmp, SIXLOWPAN_SRC_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_SRC_FLG_IDX]) | SIXLOWPAN_SRC_FLG_MSK);
+        memcpy(&features[SIXLOWPAN_SRC_FLG_IDX], flag_tmp, strlen(flag_tmp));
+        free(flag_tmp);
+      }
+    } else {
+      if (SIXLOWPAN_DST) {
+        char* tmp = malloc(SIXLOWPAN_DST_SZ);
+        uiplib_ipaddr_snprint(tmp, SIXLOWPAN_DST_SZ, ipaddr);
+        LOG_DBG("6lowpan.dst: %s\n", tmp);
+        memcpy(&features[SIXLOWPAN_DST_IDX], tmp, strlen(tmp));
+        free(tmp);
+        char* flag_tmp = malloc(SIXLOWPAN_DST_FLG_SZ);
+        snprintf(flag_tmp, SIXLOWPAN_DST_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_DST_FLG_IDX]) | SIXLOWPAN_DST_FLG_MSK);
+        memcpy(&features[SIXLOWPAN_DST_FLG_IDX], flag_tmp, strlen(flag_tmp));
+        free(flag_tmp);
+      }
+    }
+  #endif
 
   LOG_DBG_6ADDR(ipaddr);
   LOG_DBG_("\n");
@@ -1190,14 +1220,14 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
     if(!uncompress_addr(&SICSLOWPAN_IP_BUF(buf)->srcipaddr,
                         source_context ? source_context->prefix : NULL,
                         unc_ctxconf[tmp],
-                        (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_SENDER))) {
+                        (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_SENDER), 1)) {
       return false;
     }
   } else {
     /* no compression and link local */
     if(!uncompress_addr(&SICSLOWPAN_IP_BUF(buf)->srcipaddr, llprefix,
                         unc_llconf[tmp],
-                        (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_SENDER))) {
+                        (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_SENDER), 1)) {
       return false;
     }
   }
@@ -1225,7 +1255,7 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
       }
 
       if(!uncompress_addr(&SICSLOWPAN_IP_BUF(buf)->destipaddr, prefix,
-                          unc_mxconf[tmp], NULL)) {
+                          unc_mxconf[tmp], NULL, 0)) {
         return false;
       }
     }
@@ -1245,14 +1275,14 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t buf_size, uint16_t ip_len)
       if(!uncompress_addr(&SICSLOWPAN_IP_BUF(buf)->destipaddr,
                           destination_context->prefix,
                           unc_ctxconf[tmp],
-                          (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER))) {
+                          (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER), 0)) {
         return false;
       }
     } else {
       /* not context based => link local M = 0, DAC = 0 - same as SAC */
       if(!uncompress_addr(&SICSLOWPAN_IP_BUF(buf)->destipaddr, llprefix,
                           unc_llconf[tmp],
-                          (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER))) {
+                          (uip_lladdr_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER), 0)) {
         return false;
       }
     }

@@ -55,6 +55,7 @@
 
 #include "sys/log.h"
 #include "vna.h"
+#include <stdlib.h>
 
 #include <limits.h>
 #include <string.h>
@@ -317,15 +318,16 @@ dio_input(void)
   buffer = UIP_ICMP_PAYLOAD;
 
   dio.instance_id = buffer[i++];
-  if(vna_mode) {
-    LOG_DBG("Incoming DIO (id, ver, rank) = (%u,%u,%u)\n",
-            (unsigned)dio.instance_id,
-            (unsigned)dio.version,
-            (unsigned)dio.rank);
-    dio.version = buffer[i++] + (random_rand() % 16);
-  } else {
+  #ifndef NO_VNA
+    if(vna_mode) {
+      dio.version = buffer[i++] + (random_rand() % 16);
+    } else {
+      dio.version = buffer[i++];
+    }
+  #else
     dio.version = buffer[i++];
-  }
+  #endif
+
   dio.rank = get16(buffer, i);
   i += 2;
 
@@ -339,6 +341,41 @@ dio_input(void)
   dio.preference = buffer[i++] & RPL_DIO_PREFERENCE_MASK;
 
   dio.dtsn = buffer[i++];
+  #ifndef NO_FEATURES
+    if (DIO_VERSION) {
+      char* tmp = malloc(DIO_VERSION_SZ);
+      snprintf(tmp, DIO_VERSION_SZ, "%03d", dio.version);
+      LOG_DBG("dio.version: %s\n", tmp);
+      memcpy(&features[DIO_VERSION_IDX], tmp, strlen(tmp));
+      free(tmp);
+      char* flag_tmp = malloc(DIO_VERSION_FLG_SZ);
+      snprintf(flag_tmp, DIO_VERSION_FLG_SZ, "%X", hex_to_bin(features[DIO_VERSION_FLG_IDX]) | DIO_VERSION_FLG_MSK);
+      memcpy(&features[DIO_VERSION_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      free(flag_tmp);
+    }
+    if (DIO_RANK) {
+      char* tmp = malloc(DIO_RANK_SZ);
+      snprintf(tmp, DIO_RANK_SZ, "%05d", dio.rank);
+      LOG_DBG("dio.rank: %s\n", tmp);
+      memcpy(&features[DIO_RANK_IDX], tmp, strlen(tmp));
+      free(tmp);
+      char* flag_tmp = malloc(DIO_RANK_FLG_SZ);
+      snprintf(flag_tmp, DIO_RANK_FLG_SZ, "%X", hex_to_bin(features[DIO_RANK_FLG_IDX]) | DIO_RANK_FLG_MSK);
+      memcpy(&features[DIO_RANK_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      free(flag_tmp);
+    }
+    if (DIO_DTSN) {
+      char* tmp = malloc(DIO_DTSN_SZ);
+      snprintf(tmp, DIO_DTSN_SZ, "%03d", dio.dtsn);
+      LOG_DBG("dio.dtsn: %s\n", tmp);
+      memcpy(&features[DIO_DTSN_IDX], tmp, strlen(tmp));
+      free(tmp);
+      char* flag_tmp = malloc(DIO_DTSN_FLG_SZ);
+      snprintf(flag_tmp, DIO_DTSN_FLG_SZ, "%X", hex_to_bin(features[DIO_DTSN_FLG_IDX]) | DIO_DTSN_FLG_MSK);
+      memcpy(&features[DIO_DTSN_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      free(flag_tmp);
+    }
+  #endif
   /* two reserved bytes */
   i += 2;
 
@@ -362,9 +399,13 @@ dio_input(void)
     if(len + i > buffer_length) {
       LOG_WARN("Invalid DIO packet\n");
       RPL_STAT(rpl_stats.malformed_msgs++);
-      if(!vna_mode) {
+      #ifndef NO_VNA
+        if(!vna_mode) {
+          goto discard;
+        }
+      #else
         goto discard;
-      }
+      #endif
     }
 
     LOG_DBG("Incoming DIO (option, length) = (%u, %u)\n",
@@ -1225,6 +1266,21 @@ dao_output(rpl_parent_t *parent, uint8_t lifetime)
   }
 
   RPL_LOLLIPOP_INCREMENT(dao_sequence);
+  
+  #ifndef NO_FEATURES
+    if (DAO_SEQUENCE) {
+      char* tmp = malloc(DAO_SEQUENCE_SZ);
+      snprintf(tmp, DAO_SEQUENCE_SZ, "%03d", dao_sequence);
+      LOG_DBG("dao.sequence: %s\n", tmp);
+      memcpy(&features[DAO_SEQUENCE_IDX], tmp, strlen(tmp));
+      free(tmp);
+      char* flag_tmp = malloc(DAO_SEQUENCE_FLG_SZ);
+      snprintf(flag_tmp, DAO_SEQUENCE_FLG_SZ, "%X", hex_to_bin(features[DAO_SEQUENCE_FLG_IDX]) | DAO_SEQUENCE_FLG_MSK);
+      memcpy(&features[DAO_SEQUENCE_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      free(flag_tmp);
+    }
+  #endif
+  
 #if RPL_WITH_DAO_ACK
   /*
    * Set up the state since this will be the first transmission of

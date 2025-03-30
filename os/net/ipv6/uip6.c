@@ -81,6 +81,9 @@
 #include "net/ipv6/multicast/uip-mcast6.h"
 #include "net/routing/routing.h"
 
+#include "vna.h"
+#include <stdlib.h>
+
 #if UIP_ND6_SEND_NS
 #include "net/ipv6/uip-ds6-nbr.h"
 #endif /* UIP_ND6_SEND_NS */
@@ -1291,6 +1294,20 @@ uip_process(uint8_t flag)
        !uip_is_addr_unspecified(&UIP_IP_BUF->srcipaddr) &&
        !uip_is_addr_loopback(&UIP_IP_BUF->destipaddr)) {
 
+      #ifndef NO_FEATURES
+        if (IPV6_HLIM) {
+          char* tmp = malloc(IPV6_HLIM_SZ);
+          snprintf(tmp, IPV6_HLIM_SZ, "%03d", UIP_IP_BUF->ttl);
+          LOG_DBG("ipv6.hlim: %s\n", tmp);
+          memcpy(&features[IPV6_HLIM_IDX], tmp, strlen(tmp));
+          free(tmp);
+          char* flag_tmp = malloc(IPV6_HLIM_FLG_SZ);
+          snprintf(flag_tmp, IPV6_HLIM_FLG_SZ, "%X", hex_to_bin(features[IPV6_HLIM_FLG_IDX]) | IPV6_HLIM_FLG_MSK);
+          memcpy(&features[IPV6_HLIM_FLG_IDX], flag_tmp, strlen(flag_tmp));
+          free(flag_tmp);
+        }
+      #endif
+
       if(!uip_check_mtu() || !uip_update_ttl()) {
         /* Send ICMPv6 error, prepared by the function that just returned false */
         goto send;
@@ -1471,6 +1488,20 @@ uip_process(uint8_t flag)
 
   /* Process upper-layer input */
   if(next_header != NULL) {
+  
+  #ifndef NO_FEATURES
+    if (ICMPV6_TYPE) {
+      char* tmp = malloc(ICMPV6_TYPE_SZ);
+      snprintf(tmp, ICMPV6_TYPE_SZ, "%03d", UIP_ICMP_BUF->type);
+      LOG_DBG("icmpv6.type: %s\n", tmp);
+      memcpy(&features[ICMPV6_TYPE_IDX], tmp, strlen(tmp));
+      free(tmp);
+      char* flag_tmp = malloc(ICMPV6_TYPE_FLG_SZ);
+      snprintf(flag_tmp, ICMPV6_TYPE_FLG_SZ, "%X", hex_to_bin(features[ICMPV6_TYPE_FLG_IDX]) | ICMPV6_TYPE_FLG_MSK);
+      memcpy(&features[ICMPV6_TYPE_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      free(flag_tmp);
+    }
+  #endif
     switch(protocol) {
 #if UIP_TCP
     case UIP_PROTO_TCP:
@@ -1505,6 +1536,21 @@ uip_process(uint8_t flag)
   LOG_INFO("icmpv6 input length %d type: %d \n", uip_len, UIP_ICMP_BUF->type);
 
 #if UIP_CONF_IPV6_CHECKS
+  
+  #ifndef NO_FEATURES
+    if (IPV6_PLEN) {
+      char* tmp = malloc(IPV6_PLEN_SZ);
+      snprintf(tmp, IPV6_PLEN_SZ, "%03d", uipbuf_get_len_field(UIP_IP_BUF) - uip_ext_len);
+      LOG_DBG("ipv6.plen: %s\n", tmp);
+      memcpy(&features[IPV6_PLEN_IDX], tmp, strlen(tmp));
+      free(tmp);
+      char* flag_tmp = malloc(IPV6_PLEN_FLG_SZ);
+      snprintf(flag_tmp, IPV6_PLEN_FLG_SZ, "%X", hex_to_bin(features[IPV6_PLEN_FLG_IDX]) | IPV6_PLEN_FLG_MSK);
+      memcpy(&features[IPV6_PLEN_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      free(flag_tmp);
+    }
+  #endif
+
   /* Compute and check the ICMP header checksum */
   if(uip_icmp6chksum() != 0xffff) {
     UIP_STAT(++uip_stat.icmp.drop);
@@ -1532,6 +1578,21 @@ uip_process(uint8_t flag)
    * Search generic input handlers.
    * The handler is in charge of setting uip_len to 0
    */
+   
+  #ifndef NO_FEATURES
+    if (ICMPV6_CODE) {
+      char* tmp = malloc(ICMPV6_CODE_SZ);
+      snprintf(tmp, ICMPV6_CODE_SZ, "%03d", UIP_ICMP_BUF->icode);
+      LOG_DBG("icmpv6.code: %s\n", tmp);
+      memcpy(&features[ICMPV6_CODE_IDX], tmp, strlen(tmp));
+      free(tmp);
+      char* flag_tmp = malloc(ICMPV6_CODE_FLG_SZ);
+      snprintf(flag_tmp, ICMPV6_CODE_FLG_SZ, "%X", hex_to_bin(features[ICMPV6_CODE_FLG_IDX]) | ICMPV6_CODE_FLG_MSK);
+      memcpy(&features[ICMPV6_CODE_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      free(flag_tmp);
+    }
+  #endif
+  
   if(uip_icmp6_input(UIP_ICMP_BUF->type,
                      UIP_ICMP_BUF->icode) == UIP_ICMP6_INPUT_ERROR) {
     LOG_ERR("Unknown ICMPv6 message type/code %d\n", UIP_ICMP_BUF->type);
