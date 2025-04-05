@@ -1,9 +1,10 @@
 PREFIX ?= fd00::1/64
+COOJA_RPL_BR_SERVER_PORT ?= 60001
 
 ifneq ($(PORT),)
 	TUNSLIP6_ARGS = -s $(PORT) $(PREFIX)
 else
-	TUNSLIP6_ARGS = $(PREFIX)
+	TUNSLIP6_ARGS = -p $(COOJA_RPL_BR_SERVER_PORT) $(PREFIX)
 endif
 
 connect-router: $(TUNSLIP6)
