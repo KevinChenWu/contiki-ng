@@ -61,7 +61,8 @@
 #include <string.h>
 
 #define LOG_MODULE "RPL"
-#define LOG_LEVEL LOG_LEVEL_DBG
+//#define LOG_LEVEL LOG_LEVEL_RPL
+#define LOG_LEVEL LOG_LEVEL_INFO
 
 /*---------------------------------------------------------------------------*/
 #define RPL_DIO_GROUNDED                 0x80
@@ -343,37 +344,46 @@ dio_input(void)
   dio.dtsn = buffer[i++];
   #ifndef NO_FEATURES
     if (DIO_VERSION) {
-      char* tmp = malloc(DIO_VERSION_SZ);
-      snprintf(tmp, DIO_VERSION_SZ, "%03d", dio.version);
-      LOG_DBG("dio.version: %s\n", tmp);
-      memcpy(&features[DIO_VERSION_IDX], tmp, strlen(tmp));
-      free(tmp);
-      char* flag_tmp = malloc(DIO_VERSION_FLG_SZ);
-      snprintf(flag_tmp, DIO_VERSION_FLG_SZ, "%X", hex_to_bin(features[DIO_VERSION_FLG_IDX]) | DIO_VERSION_FLG_MSK);
-      memcpy(&features[DIO_VERSION_FLG_IDX], flag_tmp, strlen(flag_tmp));
-      free(flag_tmp);
+      //char* tmp = malloc(DIO_VERSION_SZ);
+      //snprintf(tmp, DIO_VERSION_SZ, "%03d", dio.version);
+      //LOG_DBG("dio.version: %s\n", tmp);
+      //memcpy(&features[DIO_VERSION_IDX], tmp, strlen(tmp));
+      //free(tmp);
+      //char* flag_tmp = malloc(DIO_VERSION_FLG_SZ);
+      //snprintf(flag_tmp, DIO_VERSION_FLG_SZ, "%X", hex_to_bin(features[DIO_VERSION_FLG_IDX]) | DIO_VERSION_FLG_MSK);
+      //memcpy(&features[DIO_VERSION_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      //free(flag_tmp);
+      snprintf(features_data.dio_version, sizeof(features_data.dio_version), "%03d", dio.version);
+      features_data.flags = features_data.flags | DIO_VERSION_FLG_MSK;
+      LOG_INFO("features->dio.version: %s\n", features_data.dio_version);
     }
     if (DIO_RANK) {
-      char* tmp = malloc(DIO_RANK_SZ);
-      snprintf(tmp, DIO_RANK_SZ, "%05d", dio.rank);
-      LOG_DBG("dio.rank: %s\n", tmp);
-      memcpy(&features[DIO_RANK_IDX], tmp, strlen(tmp));
-      free(tmp);
-      char* flag_tmp = malloc(DIO_RANK_FLG_SZ);
-      snprintf(flag_tmp, DIO_RANK_FLG_SZ, "%X", hex_to_bin(features[DIO_RANK_FLG_IDX]) | DIO_RANK_FLG_MSK);
-      memcpy(&features[DIO_RANK_FLG_IDX], flag_tmp, strlen(flag_tmp));
-      free(flag_tmp);
+      //char* tmp = malloc(DIO_RANK_SZ);
+      //snprintf(tmp, DIO_RANK_SZ, "%05d", dio.rank);
+      //LOG_DBG("dio.rank: %s\n", tmp);
+      //memcpy(&features[DIO_RANK_IDX], tmp, strlen(tmp));
+      //free(tmp);
+      //char* flag_tmp = malloc(DIO_RANK_FLG_SZ);
+      //snprintf(flag_tmp, DIO_RANK_FLG_SZ, "%X", hex_to_bin(features[DIO_RANK_FLG_IDX]) | DIO_RANK_FLG_MSK);
+      //memcpy(&features[DIO_RANK_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      //free(flag_tmp);
+      snprintf(features_data.dio_rank, sizeof(features_data.dio_rank), "%05d", dio.rank);
+      features_data.flags = features_data.flags | DIO_RANK_FLG_MSK;
+      LOG_INFO("features->dio.rank: %s\n", features_data.dio_rank);
     }
     if (DIO_DTSN) {
-      char* tmp = malloc(DIO_DTSN_SZ);
-      snprintf(tmp, DIO_DTSN_SZ, "%03d", dio.dtsn);
-      LOG_DBG("dio.dtsn: %s\n", tmp);
-      memcpy(&features[DIO_DTSN_IDX], tmp, strlen(tmp));
-      free(tmp);
-      char* flag_tmp = malloc(DIO_DTSN_FLG_SZ);
-      snprintf(flag_tmp, DIO_DTSN_FLG_SZ, "%X", hex_to_bin(features[DIO_DTSN_FLG_IDX]) | DIO_DTSN_FLG_MSK);
-      memcpy(&features[DIO_DTSN_FLG_IDX], flag_tmp, strlen(flag_tmp));
-      free(flag_tmp);
+      //char* tmp = malloc(DIO_DTSN_SZ);
+      //snprintf(tmp, DIO_DTSN_SZ, "%03d", dio.dtsn);
+      //LOG_DBG("dio.dtsn: %s\n", tmp);
+      //memcpy(&features[DIO_DTSN_IDX], tmp, strlen(tmp));
+      //free(tmp);
+      //char* flag_tmp = malloc(DIO_DTSN_FLG_SZ);
+      //snprintf(flag_tmp, DIO_DTSN_FLG_SZ, "%X", hex_to_bin(features[DIO_DTSN_FLG_IDX]) | DIO_DTSN_FLG_MSK);
+      //memcpy(&features[DIO_DTSN_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      //free(flag_tmp);
+      snprintf(features_data.dio_dtsn, sizeof(features_data.dio_dtsn), "%03d", dio.dtsn);
+      features_data.flags = features_data.flags | DIO_DTSN_FLG_MSK;
+      LOG_INFO("features->dio.dtsn: %s\n", features_data.dio_dtsn);
     }
   #endif
   /* two reserved bytes */
@@ -1269,15 +1279,18 @@ dao_output(rpl_parent_t *parent, uint8_t lifetime)
   
   #ifndef NO_FEATURES
     if (DAO_SEQUENCE) {
-      char* tmp = malloc(DAO_SEQUENCE_SZ);
-      snprintf(tmp, DAO_SEQUENCE_SZ, "%03d", dao_sequence);
-      LOG_DBG("dao.sequence: %s\n", tmp);
-      memcpy(&features[DAO_SEQUENCE_IDX], tmp, strlen(tmp));
-      free(tmp);
-      char* flag_tmp = malloc(DAO_SEQUENCE_FLG_SZ);
-      snprintf(flag_tmp, DAO_SEQUENCE_FLG_SZ, "%X", hex_to_bin(features[DAO_SEQUENCE_FLG_IDX]) | DAO_SEQUENCE_FLG_MSK);
-      memcpy(&features[DAO_SEQUENCE_FLG_IDX], flag_tmp, strlen(flag_tmp));
-      free(flag_tmp);
+      //char* tmp = malloc(DAO_SEQUENCE_SZ);
+      //snprintf(tmp, DAO_SEQUENCE_SZ, "%03d", dao_sequence);
+      //LOG_DBG("dao.sequence: %s\n", tmp);
+      //memcpy(&features[DAO_SEQUENCE_IDX], tmp, strlen(tmp));
+      //free(tmp);
+      //char* flag_tmp = malloc(DAO_SEQUENCE_FLG_SZ);
+      //snprintf(flag_tmp, DAO_SEQUENCE_FLG_SZ, "%X", hex_to_bin(features[DAO_SEQUENCE_FLG_IDX]) | DAO_SEQUENCE_FLG_MSK);
+      //memcpy(&features[DAO_SEQUENCE_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      //free(flag_tmp);
+      snprintf(features_data.dao_sequence, sizeof(features_data.dao_sequence), "%03d", dao_sequence);
+      features_data.flags = features_data.flags | DAO_SEQUENCE_FLG_MSK;
+      LOG_INFO("features->dao.sequence: %s\n", features_data.dao_sequence);
     }
   #endif
   

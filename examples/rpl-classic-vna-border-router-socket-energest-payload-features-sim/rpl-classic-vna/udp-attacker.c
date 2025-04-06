@@ -22,17 +22,21 @@
 static struct simple_udp_connection udp_conn;
 //static uint32_t rx_count = 0;
 uint8_t vna_mode = 0;
-char features[UIP_CONF_BUFFER_SIZE - 56 + 1] = "     ,   ,     ,   ,                 ,                 ,   ,   ,   ,   ,   ,   ,   , ,A soft breeze rustled the leaves as distant waves crashed against the shore. In the quiet town, lanterns flickered, casting warm glows on cobblestone streets. A cat stretched lazily on a windowsill, watching the world with half-closed eyes. Somewhere, music played a violin's gentle melody drifting through the night, weaving dreams in the hearts of those who listened.-";
-
+char features[UIP_CONF_BUFFER_SIZE - 56 + 1] = "00000,   ,     ,   ,                 ,                 ,   ,   ,   ,   ,   ,   ,   , ,                                                                                                                                                                                                                                                                                                                                                                                  ";
+struct data features_data;
 /*---------------------------------------------------------------------------*/
-int hex_to_bin(char c) {
-  int tmp = 0;
-  if (c >= '0' && c <= '9') {
-    tmp = c - '0';
-  } else if (c >= 'A' && c <= 'F') {
-    tmp = c - 'A' + 10;
+int hex_to_bin(char* c) {
+  int val = 0;
+  while (*c) {
+    uint8_t byte = *c++; 
+    if (byte >= '0' && byte <= '9') {
+      byte = byte - '0';
+    } else if (byte >= 'A' && byte <='F') {
+      byte = byte - 'A' + 10;   
+    }
+    val = (val << 4) | (byte & 0xF);
   }
-  return tmp;
+  return val;
 }
 /*---------------------------------------------------------------------------*/
 PROCESS(udp_client_process, "UDP attacker");
@@ -67,6 +71,23 @@ udp_rx_callback(struct simple_udp_connection *c,
 //static uint64_t last_tx, last_rx, last_time, last_cpu, last_lpm, last_deep_lpm;
 //#endif
 /*---------------------------------------------------------------------------*/
+static void data_struct_init(struct data features_data) {
+  features_data.flags = 0x00000;
+  snprintf(features_data.dio_version,      sizeof(features_data.dio_version),      "   "              );
+  snprintf(features_data.dio_rank,         sizeof(features_data.dio_rank),         "     "            );
+  snprintf(features_data.frame_len,        sizeof(features_data.frame_len),        "   "              );
+  snprintf(features_data.sixlowpan_src,    sizeof(features_data.sixlowpan_src),    "                 ");
+  snprintf(features_data.sixlowpan_dst,    sizeof(features_data.sixlowpan_dst),    "                 ");
+  snprintf(features_data.dio_dtsn,         sizeof(features_data.dio_dtsn),         "   "              );
+  snprintf(features_data.dao_sequence,     sizeof(features_data.dao_sequence),     "   "              );
+  snprintf(features_data.ipv6_hlim,        sizeof(features_data.ipv6_hlim),        "   "              );
+  snprintf(features_data.wpan_seq_no,      sizeof(features_data.wpan_seq_no),      "   "              );
+  snprintf(features_data.ipv6_plen,        sizeof(features_data.ipv6_plen),        "   "              );
+  snprintf(features_data.icmpv6_type,      sizeof(features_data.icmpv6_type),      "   "              );
+  snprintf(features_data.icmpv6_code,      sizeof(features_data.icmpv6_code),      "   "              );
+  snprintf(features_data.wpan_ack_request, sizeof(features_data.wpan_ack_request), " "                );
+}
+/*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_client_process, ev, data)
 {
   static struct etimer periodic_timer;
@@ -77,6 +98,8 @@ PROCESS_THREAD(udp_client_process, ev, data)
   //static uint32_t tx_count;
   //static uint32_t missed_tx_count;
   static uint32_t temperature;
+  
+  data_struct_init(features_data);
 
   PROCESS_BEGIN();
   
@@ -103,8 +126,9 @@ PROCESS_THREAD(udp_client_process, ev, data)
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
     
     uip_ip6addr(&server_ipaddr, WSN_SERVER_IP, 0, 0, 0, 0, 0, 0, 1);
+    snprintf(features, sizeof(features), "%05lX,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,                                                                                                                                                                                                                                                                                                                                                                                  ", features_data.flags, features_data.dio_version, features_data.dio_rank, features_data.frame_len, features_data.sixlowpan_src, features_data.sixlowpan_dst, features_data.dio_dtsn, features_data.dao_sequence, features_data.ipv6_hlim, features_data.wpan_seq_no, features_data.ipv6_plen, features_data.icmpv6_type, features_data.icmpv6_code, features_data.wpan_ack_request);
     simple_udp_sendto(&udp_conn, features, strlen(features), &server_ipaddr);
-    snprintf(features, sizeof(features), "00000,   ,     ,   ,                 ,                 ,   ,   ,   ,   ,   ,   ,   , ,A soft breeze rustled the leaves as distant waves crashed against the shore. In the quiet town, lanterns flickered, casting warm glows on cobblestone streets. A cat stretched lazily on a windowsill, watching the world with half-closed eyes. Somewhere, music played a violin's gentle melody drifting through the night, weaving dreams in the hearts of those who listened.-");
+    data_struct_init(features_data);
     LOG_INFO("Sending features to ");
     LOG_INFO_6ADDR(&server_ipaddr);
     LOG_INFO_("\n");

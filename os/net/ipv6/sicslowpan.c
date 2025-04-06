@@ -82,7 +82,8 @@
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "6LoWPAN"
-#define LOG_LEVEL LOG_LEVEL_6LOWPAN
+//#define LOG_LEVEL LOG_LEVEL_6LOWPAN
+#define LOG_LEVEL LOG_LEVEL_INFO
 
 #define GET16(ptr,index) (((uint16_t)((ptr)[(index)] << 8)) | ((ptr)[(index) + 1]))
 #define SET16(ptr,index,value) do {     \
@@ -648,27 +649,33 @@ uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
   #ifndef NO_FEATURES
     if (src_flag) {
       if (SIXLOWPAN_SRC) {
-        char* tmp = malloc(SIXLOWPAN_SRC_SZ);
-        uiplib_ipaddr_snprint(tmp, SIXLOWPAN_SRC_SZ, ipaddr);
-        LOG_DBG("6lowpan.src: %s\n", tmp);
-        memcpy(&features[SIXLOWPAN_SRC_IDX], tmp, strlen(tmp));
-        free(tmp);
-        char* flag_tmp = malloc(SIXLOWPAN_SRC_FLG_SZ);
-        snprintf(flag_tmp, SIXLOWPAN_SRC_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_SRC_FLG_IDX]) | SIXLOWPAN_SRC_FLG_MSK);
-        memcpy(&features[SIXLOWPAN_SRC_FLG_IDX], flag_tmp, strlen(flag_tmp));
-        free(flag_tmp);
+        //char* tmp = malloc(SIXLOWPAN_SRC_SZ);
+        //uiplib_ipaddr_snprint(tmp, SIXLOWPAN_SRC_SZ, ipaddr);
+        //LOG_DBG("6lowpan.src: %s\n", tmp);
+        //memcpy(&features[SIXLOWPAN_SRC_IDX], tmp, strlen(tmp));
+        //free(tmp);
+        //char* flag_tmp = malloc(SIXLOWPAN_SRC_FLG_SZ);
+        //snprintf(flag_tmp, SIXLOWPAN_SRC_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_SRC_FLG_IDX]) | SIXLOWPAN_SRC_FLG_MSK);
+        //memcpy(&features[SIXLOWPAN_SRC_FLG_IDX], flag_tmp, strlen(flag_tmp));
+        //free(flag_tmp);
+        uiplib_ipaddr_snprint(features_data.sixlowpan_src, sizeof(features_data.sixlowpan_src), ipaddr);
+        features_data.flags = features_data.flags | SIXLOWPAN_SRC_FLG_MSK;
+        LOG_INFO("features->6lowpan.src: %s\n", features_data.sixlowpan_src);
       }
     } else {
       if (SIXLOWPAN_DST) {
-        char* tmp = malloc(SIXLOWPAN_DST_SZ);
-        uiplib_ipaddr_snprint(tmp, SIXLOWPAN_DST_SZ, ipaddr);
-        LOG_DBG("6lowpan.dst: %s\n", tmp);
-        memcpy(&features[SIXLOWPAN_DST_IDX], tmp, strlen(tmp));
-        free(tmp);
-        char* flag_tmp = malloc(SIXLOWPAN_DST_FLG_SZ);
-        snprintf(flag_tmp, SIXLOWPAN_DST_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_DST_FLG_IDX]) | SIXLOWPAN_DST_FLG_MSK);
-        memcpy(&features[SIXLOWPAN_DST_FLG_IDX], flag_tmp, strlen(flag_tmp));
-        free(flag_tmp);
+        //char* tmp = malloc(SIXLOWPAN_DST_SZ);
+        //uiplib_ipaddr_snprint(tmp, SIXLOWPAN_DST_SZ, ipaddr);
+        //LOG_DBG("6lowpan.dst: %s\n", tmp);
+        //memcpy(&features[SIXLOWPAN_DST_IDX], tmp, strlen(tmp));
+        //free(tmp);
+        //char* flag_tmp = malloc(SIXLOWPAN_DST_FLG_SZ);
+        //snprintf(flag_tmp, SIXLOWPAN_DST_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_DST_FLG_IDX]) | SIXLOWPAN_DST_FLG_MSK);
+        //memcpy(&features[SIXLOWPAN_DST_FLG_IDX], flag_tmp, strlen(flag_tmp));
+        //free(flag_tmp);
+        uiplib_ipaddr_snprint(features_data.sixlowpan_dst, sizeof(features_data.sixlowpan_dst), ipaddr);
+        features_data.flags = features_data.flags | SIXLOWPAN_DST_FLG_MSK;
+        LOG_INFO("features->6lowpan.dst: %s\n", features_data.sixlowpan_dst);
       }
     }
   #endif

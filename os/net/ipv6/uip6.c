@@ -91,7 +91,8 @@
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "IPv6"
-#define LOG_LEVEL LOG_LEVEL_IPV6
+//#define LOG_LEVEL LOG_LEVEL_IPV6
+#define LOG_LEVEL LOG_LEVEL_INFO
 
 #if UIP_STATISTICS == 1
 struct uip_stats uip_stat;
@@ -1296,15 +1297,18 @@ uip_process(uint8_t flag)
 
       #ifndef NO_FEATURES
         if (IPV6_HLIM) {
-          char* tmp = malloc(IPV6_HLIM_SZ);
-          snprintf(tmp, IPV6_HLIM_SZ, "%03d", UIP_IP_BUF->ttl);
-          LOG_DBG("ipv6.hlim: %s\n", tmp);
-          memcpy(&features[IPV6_HLIM_IDX], tmp, strlen(tmp));
-          free(tmp);
-          char* flag_tmp = malloc(IPV6_HLIM_FLG_SZ);
-          snprintf(flag_tmp, IPV6_HLIM_FLG_SZ, "%X", hex_to_bin(features[IPV6_HLIM_FLG_IDX]) | IPV6_HLIM_FLG_MSK);
-          memcpy(&features[IPV6_HLIM_FLG_IDX], flag_tmp, strlen(flag_tmp));
-          free(flag_tmp);
+          //char* tmp = malloc(IPV6_HLIM_SZ);
+          //snprintf(tmp, IPV6_HLIM_SZ, "%03d", UIP_IP_BUF->ttl);
+          //LOG_DBG("ipv6.hlim: %s\n", tmp);
+          //memcpy(&features[IPV6_HLIM_IDX], tmp, strlen(tmp));
+          //free(tmp);
+          //char* flag_tmp = malloc(IPV6_HLIM_FLG_SZ);
+          //snprintf(flag_tmp, IPV6_HLIM_FLG_SZ, "%X", hex_to_bin(features[IPV6_HLIM_FLG_IDX]) | IPV6_HLIM_FLG_MSK);
+          //memcpy(&features[IPV6_HLIM_FLG_IDX], flag_tmp, strlen(flag_tmp));
+          //free(flag_tmp);
+          snprintf(features_data.ipv6_hlim, sizeof(features_data.ipv6_hlim), "%03d", UIP_IP_BUF->ttl);
+          features_data.flags = features_data.flags | IPV6_HLIM_FLG_MSK;
+          LOG_INFO("features->ipv6.hlim: %s\n", features_data.ipv6_hlim);
         }
       #endif
 
@@ -1491,15 +1495,18 @@ uip_process(uint8_t flag)
   
   #ifndef NO_FEATURES
     if (ICMPV6_TYPE) {
-      char* tmp = malloc(ICMPV6_TYPE_SZ);
-      snprintf(tmp, ICMPV6_TYPE_SZ, "%03d", UIP_ICMP_BUF->type);
-      LOG_DBG("icmpv6.type: %s\n", tmp);
-      memcpy(&features[ICMPV6_TYPE_IDX], tmp, strlen(tmp));
-      free(tmp);
-      char* flag_tmp = malloc(ICMPV6_TYPE_FLG_SZ);
-      snprintf(flag_tmp, ICMPV6_TYPE_FLG_SZ, "%X", hex_to_bin(features[ICMPV6_TYPE_FLG_IDX]) | ICMPV6_TYPE_FLG_MSK);
-      memcpy(&features[ICMPV6_TYPE_FLG_IDX], flag_tmp, strlen(flag_tmp));
-      free(flag_tmp);
+      //char* tmp = malloc(ICMPV6_TYPE_SZ);
+      //snprintf(tmp, ICMPV6_TYPE_SZ, "%03d", UIP_ICMP_BUF->type);
+      //LOG_DBG("icmpv6.type: %s\n", tmp);
+      //memcpy(&features[ICMPV6_TYPE_IDX], tmp, strlen(tmp));
+      //free(tmp);
+      //char* flag_tmp = malloc(ICMPV6_TYPE_FLG_SZ);
+      //snprintf(flag_tmp, ICMPV6_TYPE_FLG_SZ, "%X", hex_to_bin(features[ICMPV6_TYPE_FLG_IDX]) | ICMPV6_TYPE_FLG_MSK);
+      //memcpy(&features[ICMPV6_TYPE_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      //free(flag_tmp);
+      snprintf(features_data.icmpv6_type, sizeof(features_data.icmpv6_type), "%03d", UIP_ICMP_BUF->type);
+      features_data.flags = features_data.flags | ICMPV6_TYPE_FLG_MSK;
+      LOG_INFO("features->icmpv6.type: %s\n", features_data.icmpv6_type);
     }
   #endif
     switch(protocol) {
@@ -1539,15 +1546,18 @@ uip_process(uint8_t flag)
   
   #ifndef NO_FEATURES
     if (IPV6_PLEN) {
-      char* tmp = malloc(IPV6_PLEN_SZ);
-      snprintf(tmp, IPV6_PLEN_SZ, "%03d", uipbuf_get_len_field(UIP_IP_BUF) - uip_ext_len);
-      LOG_DBG("ipv6.plen: %s\n", tmp);
-      memcpy(&features[IPV6_PLEN_IDX], tmp, strlen(tmp));
-      free(tmp);
-      char* flag_tmp = malloc(IPV6_PLEN_FLG_SZ);
-      snprintf(flag_tmp, IPV6_PLEN_FLG_SZ, "%X", hex_to_bin(features[IPV6_PLEN_FLG_IDX]) | IPV6_PLEN_FLG_MSK);
-      memcpy(&features[IPV6_PLEN_FLG_IDX], flag_tmp, strlen(flag_tmp));
-      free(flag_tmp);
+      //char* tmp = malloc(IPV6_PLEN_SZ);
+      //snprintf(tmp, IPV6_PLEN_SZ, "%03d", uipbuf_get_len_field(UIP_IP_BUF) - uip_ext_len);
+      //LOG_DBG("ipv6.plen: %s\n", tmp);
+      //memcpy(&features[IPV6_PLEN_IDX], tmp, strlen(tmp));
+      //free(tmp);
+      //char* flag_tmp = malloc(IPV6_PLEN_FLG_SZ);
+      //snprintf(flag_tmp, IPV6_PLEN_FLG_SZ, "%X", hex_to_bin(features[IPV6_PLEN_FLG_IDX]) | IPV6_PLEN_FLG_MSK);
+      //memcpy(&features[IPV6_PLEN_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      //free(flag_tmp);
+      snprintf(features_data.ipv6_plen, sizeof(features_data.ipv6_plen), "%03d", uipbuf_get_len_field(UIP_IP_BUF) - uip_ext_len);
+      features_data.flags = features_data.flags | IPV6_PLEN_FLG_MSK;
+      LOG_INFO("features->ipv6.plen: %s\n", features_data.ipv6_plen);
     }
   #endif
 
@@ -1581,15 +1591,18 @@ uip_process(uint8_t flag)
    
   #ifndef NO_FEATURES
     if (ICMPV6_CODE) {
-      char* tmp = malloc(ICMPV6_CODE_SZ);
-      snprintf(tmp, ICMPV6_CODE_SZ, "%03d", UIP_ICMP_BUF->icode);
-      LOG_DBG("icmpv6.code: %s\n", tmp);
-      memcpy(&features[ICMPV6_CODE_IDX], tmp, strlen(tmp));
-      free(tmp);
-      char* flag_tmp = malloc(ICMPV6_CODE_FLG_SZ);
-      snprintf(flag_tmp, ICMPV6_CODE_FLG_SZ, "%X", hex_to_bin(features[ICMPV6_CODE_FLG_IDX]) | ICMPV6_CODE_FLG_MSK);
-      memcpy(&features[ICMPV6_CODE_FLG_IDX], flag_tmp, strlen(flag_tmp));
-      free(flag_tmp);
+      //char* tmp = malloc(ICMPV6_CODE_SZ);
+      //snprintf(tmp, ICMPV6_CODE_SZ, "%03d", UIP_ICMP_BUF->icode);
+      //LOG_DBG("icmpv6.code: %s\n", tmp);
+      //memcpy(&features[ICMPV6_CODE_IDX], tmp, strlen(tmp));
+      //free(tmp);
+      //char* flag_tmp = malloc(ICMPV6_CODE_FLG_SZ);
+      //snprintf(flag_tmp, ICMPV6_CODE_FLG_SZ, "%X", hex_to_bin(features[ICMPV6_CODE_FLG_IDX]) | ICMPV6_CODE_FLG_MSK);
+      //memcpy(&features[ICMPV6_CODE_FLG_IDX], flag_tmp, strlen(flag_tmp));
+      //free(flag_tmp);
+      snprintf(features_data.icmpv6_code, sizeof(features_data.icmpv6_code), "%03d", UIP_ICMP_BUF->icode);
+      features_data.flags = features_data.flags | ICMPV6_CODE_FLG_MSK;
+      LOG_INFO("features->icmpv6.code: %s\n", features_data.icmpv6_code);
     }
   #endif
   
