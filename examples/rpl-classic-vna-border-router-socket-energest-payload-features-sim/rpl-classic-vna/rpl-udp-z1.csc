@@ -3,7 +3,7 @@
   <simulation>
     <title>RPL-UDP Example</title>
     <speedlimit>1.0</speedlimit>
-    <randomseed>generated</randomseed>
+    <randomseed>123456</randomseed>
     <motedelay_us>5000000</motedelay_us>
     <radiomedium>
       org.contikios.cooja.radiomediums.UDGM
@@ -48,7 +48,7 @@
       <description>Z1 Mote Type #udp client</description>
       <source>[CONFIG_DIR]/udp-client.c</source>
       <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd00</commands>
-      <firmware>/home/k/contiki-ng-TFG/examples/rpl-classic-vna-border-router-socket-energest-payload-features-sim/rpl-classic-vna/build/z1/udp-client.z1</firmware>
+      <firmware>[CONFIG_DIR]/build/z1/udp-client.z1</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Mote2MoteRelations</moteinterface>
@@ -180,7 +180,7 @@
       <skin>org.contikios.cooja.plugins.skins.GridVisualizerSkin</skin>
       <viewport>0.9964622770251798 0.0 0.0 0.9964622770251798 42.2050696304944 100.12897315651286</viewport>
     </plugin_config>
-    <bounds x="14" y="210" height="227" width="234" z="1" />
+    <bounds x="14" y="210" height="227" width="234" z="3" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.LogListener
@@ -189,7 +189,7 @@
       <formatted_time />
       <coloring />
     </plugin_config>
-    <bounds x="759" y="7" height="556" width="1011" z="3" />
+    <bounds x="759" y="7" height="556" width="1011" z="5" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.TimeLine
@@ -209,7 +209,7 @@
       <showLEDs />
       <zoomfactor>681.712557066089</zoomfactor>
     </plugin_config>
-    <bounds x="0" y="567" height="352" width="1804" z="2" />
+    <bounds x="0" y="567" height="352" width="1804" z="4" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.RadioLogger
@@ -217,7 +217,7 @@
       <split>150</split>
       <formatted_time />
     </plugin_config>
-    <bounds x="259" y="12" height="546" width="500" z="4" />
+    <bounds x="259" y="12" height="546" width="500" z="1" />
   </plugin>
   <plugin>
     org.contikios.cooja.serialsocket.SerialSocketServer
@@ -226,6 +226,26 @@
       <port>60001</port>
       <bound>true</bound>
     </plugin_config>
-    <bounds x="0" y="0" height="126" width="362" />
+    <bounds x="0" y="0" height="126" width="362" z="2" />
+  </plugin>
+  <plugin>
+    org.contikios.cooja.plugins.ScriptRunner
+    <plugin_config>
+      <script>/*
+ * Example Contiki test script (JavaScript).
+ * A Contiki test script acts on mote output, such as via printf()'s.
+ * The script may operate on the following variables:
+ *  Mote mote, int id, String msg
+ */
+
+TIMEOUT(60000, log.testOK());
+
+while (true) {
+  log.log(time + ":" + id + ":" + msg + "\n");
+  YIELD();
+}</script>
+      <active>true</active>
+    </plugin_config>
+    <bounds x="896" y="136" height="700" width="600" />
   </plugin>
 </simconf>
