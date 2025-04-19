@@ -1,0 +1,118 @@
+#!/usr/bin/env expect
+set timeout 100
+log_user 0
+match_max -d 100000
+
+set contiki_ng_path [lindex $argv 0]
+set sim_path [lindex $argv 1]
+set sim_file [lindex $argv 2]
+set ip_addr [lindex $argv 3]
+set listen_port [lindex $argv 4]
+
+set sim_file_path "$sim_path/rpl-classic-vna/$sim_file"
+set rpl_br_path "$sim_path/rpl-border-router"
+set udp_wsn_server_path "$sim_path"
+set password " "
+
+if {! [file isdirectory $contiki_ng_path]} {
+    puts "The dir $contiki_ng_path does not exist. Exiting"
+    exit
+}
+
+if {! [file isdirectory $sim_path]} {
+    puts "The dir $sim_path does not exist. Exiting"
+    exit
+}
+
+if {! [file isdirectory $rpl_br_path]} {
+    puts "The dir $rpl_br_path does not exist. Exiting"
+    exit
+}
+
+if {! [file isfile $sim_file_path]} {
+    puts "The file $sim_file_path does not exist. Exiting"
+    exit
+}
+
+if {! [file isfile "$udp_wsn_server_path/wsn_server.py"]} {
+    puts "The file $udp_wsn_server_path/wsn_server.py does not exist. Exiting"
+    exit
+}
+
+spawn bash
+set cooja_id $spawn_id
+send -i $cooja_id "PS1='>'\r"
+expect -i $cooja_id -re ">$"
+
+send -i $cooja_id "cd $contiki_ng_path/tools/cooja; pwd\r"
+expect {
+    -timeout 1 -i $cooja_id -re "\n.*($contiki_ng_path/tools/cooja).*>$" {set pwd $expect_out(1,string)}
+}
+
+puts "Current working dir: $pwd"
+
+send -i $cooja_id "./gradlew run --args='--no-gui --autostart $sim_file_path'\r"
+
+expect {
+    -timeout 15 -i $cooja_id -re ".*(Listening on port: \\d+)" {
+        puts $expect_out(1,string)
+        set listen_port_sim [regexp -all -inline "\\d+" $expect_out(1,string)]
+        if {$listen_port_sim ne $listen_port} {
+            puts "Listen port from simulation file $listen_port_sim did not match provided Listen port $listen_port"
+            puts "Exiting from Cooja"
+    	    send -i $cooja_id \x03
+    	    send -i $cooja_id "exit\r"
+    	    exit
+        } else {
+            exp_continue
+        }
+    }
+    -timeout 20 -i $cooja_id -re ".*(Waiting 10 seconds for RPL Border Router to start)" {
+        puts $expect_out(1,string)
+        spawn bash
+        set rpl_br_id $spawn_id
+        send -i $rpl_br_id "cd $rpl_br_path; make TARGET=z1 connect-router-cooja PREFIX=${ip_addr}::1/64 COOJA_RPL_BR_SERVER_PORT=$listen_port\r"
+        expect {
+             -i $rpl_br_id -re ".*(password).*" {
+                 send -i $rpl_br_id "$password\r"
+             }
+        }
+        puts "RPL Border Router started"
+        exp_continue
+    }
+    -timeout 35 -i $cooja_id -re ".*(Waiting 10 seconds for Python UDP WSN Server to start)" {
+        puts $expect_out(1,string)
+        spawn bash
+        set udp_wsn_server_id $spawn_id
+        send -i $udp_wsn_server_id "cd $udp_wsn_server_path; ./wsn_server.py -w -s ${ip_addr}::1 -c $ip_addr.csv\r"
+        puts "Python UDP WSN Server started"
+        exp_continue
+    }
+    -timeout 50 -i $cooja_id -re ".*(Starting simulation)" {
+        puts $expect_out(1,string)
+        exp_continue
+    }
+    -timeout 110 -i $cooja_id -re ".* (\\d+% completed, .* sec remaining).*" {
+        puts $expect_out(1,string)
+        exp_continue
+    }
+    -timeout 120 -i $cooja_id -re ".*(BUILD SUCCESSFUL).*" {
+        puts $expect_out(1,string)
+        exp_continue
+    }
+    -timeout 125 -i $cooja_id -re ">$" {
+    	puts "Exiting from Cooja"
+    	send -i $cooja_id "exit\r"
+    	puts "Exiting from RPL Border Router"
+    	send -i $rpl_br_id "exit\r"
+    	puts "Exiting from Python UDP WSN Server"
+    	send -i $udp_wsn_server_id \x03
+    	send -i $udp_wsn_server_id "exit\r"
+    	puts "Exiting from Expect"
+    	exit
+    }
+}
+
+puts "Exiting from Expect"
+expect eof
+exit
