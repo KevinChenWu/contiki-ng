@@ -47,8 +47,8 @@
       org.contikios.cooja.mspmote.Z1MoteType
       <description>Z1 Mote Type #udp client</description>
       <source>[CONFIG_DIR]/udp-client.c</source>
-      <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd00</commands>
-      <firmware>[CONFIG_DIR]/build/z1/udp-client.z1</firmware>
+      <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd00 FEATURES_SEND_INTERVAL=10</commands>
+      <firmware>/home/k/contiki-ng-TFG/examples/rpl-classic-vna-border-router-socket-energest-payload-features-sim/rpl-classic-vna/build/z1/udp-client.z1</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Mote2MoteRelations</moteinterface>
@@ -145,7 +145,7 @@
       org.contikios.cooja.mspmote.Z1MoteType
       <description>Z1 Mote Type #udp attacker</description>
       <source>[CONFIG_DIR]/udp-attacker.c</source>
-      <commands>$(MAKE) -j$(CPUS) udp-attacker.z1 TARGET=z1 WSN_SERVER_IP=0xfd00</commands>
+      <commands>$(MAKE) -j$(CPUS) udp-attacker.z1 TARGET=z1 WSN_SERVER_IP=0xfd00 FEATURES_SEND_INTERVAL=10</commands>
       <firmware>[CONFIG_DIR]/build/z1/udp-attacker.z1</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>

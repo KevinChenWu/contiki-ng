@@ -25,6 +25,7 @@ The rpl-udp.robot is a Robot framework test for renode. To run that do:
 
 ---
 The Python UDP WSN Server IP can be provided to the `udp-client.c` and `udp-attacker.c` make command lines thru the variable `WSN_SERVER_IP`.
+The sending interval for features can be provided to the `udp-client.c` and `udp-attacker.c` make command lines thru the variable `FEATURES_SEND_INTERVAL`.
 For example in the Compile Commands of Contiki-NG Cooja:
 
-    >$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd00
+    >$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd00 FEATURES_SEND_INTERVAL=10
