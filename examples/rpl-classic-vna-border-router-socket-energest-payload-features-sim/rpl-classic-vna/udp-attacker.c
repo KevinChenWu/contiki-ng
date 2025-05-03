@@ -92,9 +92,10 @@ PROCESS_THREAD(udp_client_process, ev, data)
 {
   static struct etimer periodic_timer;
   static struct stimer attack_timer;
-  //static char str[UIP_CONF_BUFFER_SIZE - 56 + 1];
+  static char str[32];
   uip_ipaddr_t dest_ipaddr;
-  uip_ipaddr_t server_ipaddr;
+  uip_ipaddr_t wsn_server_ipaddr;
+  uip_ipaddr_t data_server_ipaddr;
   //static uint32_t tx_count;
   //static uint32_t missed_tx_count;
   static uint32_t temperature;
@@ -125,12 +126,12 @@ PROCESS_THREAD(udp_client_process, ev, data)
   while(1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
     
-    uip_ip6addr(&server_ipaddr, WSN_SERVER_IP, 0, 0, 0, 0, 0, 0, 1);
+    uip_ip6addr(&wsn_server_ipaddr, WSN_SERVER_IP, 0, 0, 0, 0, 0, 0, 1);
     snprintf(features, sizeof(features), "%05lX,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,                                                                                                                                                                                                                                                                                                                                                                                  ", features_data.flags, features_data.dio_version, features_data.dio_rank, features_data.frame_len, features_data.sixlowpan_src, features_data.sixlowpan_dst, features_data.dio_dtsn, features_data.dao_sequence, features_data.ipv6_hlim, features_data.wpan_seq_no, features_data.ipv6_plen, features_data.icmpv6_type, features_data.icmpv6_code, features_data.wpan_ack_request);
-    simple_udp_sendto(&udp_conn, features, strlen(features), &server_ipaddr);
+    simple_udp_sendto(&udp_conn, features, strlen(features), &wsn_server_ipaddr);
     data_struct_init(features_data);
     LOG_INFO("Sending features to ");
-    LOG_INFO_6ADDR(&server_ipaddr);
+    LOG_INFO_6ADDR(&wsn_server_ipaddr);
     LOG_INFO_("\n");
 
     if(NETSTACK_ROUTING.node_is_reachable() &&
@@ -159,12 +160,12 @@ PROCESS_THREAD(udp_client_process, ev, data)
       //tx_count++;
       
       temperature = 21 + (random_rand() % (29 - 21 + 1));
-      uip_ip6addr(&server_ipaddr, 0xfd80, 0, 0, 0, 0, 0, 0, 1);
+      uip_ip6addr(&data_server_ipaddr, 0xfdff, 0, 0, 0, 0, 0, 0, 1);
       LOG_INFO("Sending data (temperature: %"PRIu32" °C) to ", temperature);
-      LOG_INFO_6ADDR(&server_ipaddr);
+      LOG_INFO_6ADDR(&data_server_ipaddr);
       LOG_INFO_("\n");
-      //snprintf(str, sizeof(str), "temperature: %" PRIu32 " °C", temperature);
-      //simple_udp_sendto(&udp_conn, str, strlen(str), &server_ipaddr);
+      snprintf(str, sizeof(str), "temperature: %" PRIu32 " °C", temperature);
+      simple_udp_sendto(&udp_conn, str, strlen(str), &data_server_ipaddr);
       
       //uip_ip6addr(&server_ipaddr, 0xfd00, 0, 0, 0, 0, 0, 0, 1);
       //LOG_INFO("Sending metric %"PRIu32" to ", tx_count);

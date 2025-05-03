@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import socket
 
-server_ip = "fd80::1"
+server_ip = "fdff::1"
 server_port = 5678
 buffer_size = 1024
 
