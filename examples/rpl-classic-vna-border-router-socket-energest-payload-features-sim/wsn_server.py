@@ -30,7 +30,7 @@ print("UDP WSN server up and listening")
 
 while True:
     data_bytes, address = udp_server.recvfrom(buffer_size)
-    node_id = address[0].split(":")[-1]
+    node_id = int(address[0].split(":")[-1], 16)
     data = data_bytes.decode()
     data_list = data.split(",")
     data_header, data_list = data_list[0], data_list[1:]

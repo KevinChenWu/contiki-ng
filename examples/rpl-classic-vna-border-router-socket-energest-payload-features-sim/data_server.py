@@ -12,6 +12,6 @@ print("UDP Data server up and listening")
 
 while True:
     data_bytes, address = udp_server.recvfrom(buffer_size)
-    node_id = address[0].split(":")[-1]
+    node_id = int(address[0].split(":")[-1], 16)
     data = data_bytes.decode()
     print(f"Node ID: {node_id}, Node IP: \"{address[0]}\", data: \"{data}\"")
