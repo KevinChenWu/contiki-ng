@@ -353,7 +353,7 @@ dio_input(void)
       //snprintf(flag_tmp, DIO_VERSION_FLG_SZ, "%X", hex_to_bin(features[DIO_VERSION_FLG_IDX]) | DIO_VERSION_FLG_MSK);
       //memcpy(&features[DIO_VERSION_FLG_IDX], flag_tmp, strlen(flag_tmp));
       //free(flag_tmp);
-      snprintf(features_data.dio_version, sizeof(features_data.dio_version), "%03d", dio.version);
+      snprintf(features_data.dio_version, sizeof(features_data.dio_version), "%.1d", dio.version);
       features_data.flags = features_data.flags | DIO_VERSION_FLG_MSK;
       LOG_INFO("features->dio.version: %s\n", features_data.dio_version);
     }
@@ -367,7 +367,7 @@ dio_input(void)
       //snprintf(flag_tmp, DIO_RANK_FLG_SZ, "%X", hex_to_bin(features[DIO_RANK_FLG_IDX]) | DIO_RANK_FLG_MSK);
       //memcpy(&features[DIO_RANK_FLG_IDX], flag_tmp, strlen(flag_tmp));
       //free(flag_tmp);
-      snprintf(features_data.dio_rank, sizeof(features_data.dio_rank), "%05d", dio.rank);
+      snprintf(features_data.dio_rank, sizeof(features_data.dio_rank), "%.1d", dio.rank);
       features_data.flags = features_data.flags | DIO_RANK_FLG_MSK;
       LOG_INFO("features->dio.rank: %s\n", features_data.dio_rank);
     }
@@ -381,7 +381,7 @@ dio_input(void)
       //snprintf(flag_tmp, DIO_DTSN_FLG_SZ, "%X", hex_to_bin(features[DIO_DTSN_FLG_IDX]) | DIO_DTSN_FLG_MSK);
       //memcpy(&features[DIO_DTSN_FLG_IDX], flag_tmp, strlen(flag_tmp));
       //free(flag_tmp);
-      snprintf(features_data.dio_dtsn, sizeof(features_data.dio_dtsn), "%03d", dio.dtsn);
+      snprintf(features_data.dio_dtsn, sizeof(features_data.dio_dtsn), "%.1d", dio.dtsn);
       features_data.flags = features_data.flags | DIO_DTSN_FLG_MSK;
       LOG_INFO("features->dio.dtsn: %s\n", features_data.dio_dtsn);
     }
@@ -1288,7 +1288,7 @@ dao_output(rpl_parent_t *parent, uint8_t lifetime)
       //snprintf(flag_tmp, DAO_SEQUENCE_FLG_SZ, "%X", hex_to_bin(features[DAO_SEQUENCE_FLG_IDX]) | DAO_SEQUENCE_FLG_MSK);
       //memcpy(&features[DAO_SEQUENCE_FLG_IDX], flag_tmp, strlen(flag_tmp));
       //free(flag_tmp);
-      snprintf(features_data.dao_sequence, sizeof(features_data.dao_sequence), "%03d", dao_sequence);
+      snprintf(features_data.dao_sequence, sizeof(features_data.dao_sequence), "%.1d", dao_sequence);
       features_data.flags = features_data.flags | DAO_SEQUENCE_FLG_MSK;
       LOG_INFO("features->dao.sequence: %s\n", features_data.dao_sequence);
     }

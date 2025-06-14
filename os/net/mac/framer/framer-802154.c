@@ -258,7 +258,7 @@ parse(void)
         //snprintf(flag_tmp, FRAME_LEN_FLG_SZ, "%X", hex_to_bin(features[FRAME_LEN_FLG_IDX]) | FRAME_LEN_FLG_MSK);
         //memcpy(&features[FRAME_LEN_FLG_IDX], flag_tmp, strlen(flag_tmp));
         //free(flag_tmp);
-        snprintf(features_data.frame_len, sizeof(features_data.frame_len), "%03d", packetbuf_totlen()+2);
+        snprintf(features_data.frame_len, sizeof(features_data.frame_len), "%.1d", packetbuf_totlen()+2);
         features_data.flags = features_data.flags | FRAME_LEN_FLG_MSK;
         LOG_INFO("features->frame.len: %s\n", features_data.frame_len);
       }
@@ -272,7 +272,7 @@ parse(void)
         //snprintf(flag_tmp, WPAN_SEQ_NO_FLG_SZ, "%X", hex_to_bin(features[WPAN_SEQ_NO_FLG_IDX]) | WPAN_SEQ_NO_FLG_MSK);
         //memcpy(&features[WPAN_SEQ_NO_FLG_IDX], flag_tmp, strlen(flag_tmp));
         //free(flag_tmp);
-        snprintf(features_data.wpan_seq_no, sizeof(features_data.wpan_seq_no), "%03d", packetbuf_attr(PACKETBUF_ATTR_MAC_SEQNO));
+        snprintf(features_data.wpan_seq_no, sizeof(features_data.wpan_seq_no), "%.1d", packetbuf_attr(PACKETBUF_ATTR_MAC_SEQNO));
         features_data.flags = features_data.flags | WPAN_SEQ_NO_FLG_MSK;
         LOG_INFO("features->wpan.seq_no: %s\n", features_data.wpan_seq_no);
       }
