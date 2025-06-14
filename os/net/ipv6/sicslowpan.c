@@ -658,7 +658,11 @@ uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
         //snprintf(flag_tmp, SIXLOWPAN_SRC_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_SRC_FLG_IDX]) | SIXLOWPAN_SRC_FLG_MSK);
         //memcpy(&features[SIXLOWPAN_SRC_FLG_IDX], flag_tmp, strlen(flag_tmp));
         //free(flag_tmp);
-        uiplib_ipaddr_snprint(features_data.sixlowpan_src, sizeof(features_data.sixlowpan_src), ipaddr);
+        if (ipaddr->u8[0] == 0xff && ipaddr->u8[1] == 0x02 && ipaddr->u8[15] == 0x1a) {
+          uiplib_ipaddr_snprint(features_data.sixlowpan_src, sizeof(features_data.sixlowpan_src), ipaddr);
+        } else {
+          snprintf(features_data.sixlowpan_src, sizeof(features_data.sixlowpan_src), "%.1x", ipaddr->u8[15]);
+        }
         features_data.flags = features_data.flags | SIXLOWPAN_SRC_FLG_MSK;
         LOG_INFO("features->6lowpan.src: %s\n", features_data.sixlowpan_src);
       }
@@ -673,7 +677,11 @@ uncompress_addr(uip_ipaddr_t *ipaddr, uint8_t const prefix[],
         //snprintf(flag_tmp, SIXLOWPAN_DST_FLG_SZ, "%X", hex_to_bin(features[SIXLOWPAN_DST_FLG_IDX]) | SIXLOWPAN_DST_FLG_MSK);
         //memcpy(&features[SIXLOWPAN_DST_FLG_IDX], flag_tmp, strlen(flag_tmp));
         //free(flag_tmp);
-        uiplib_ipaddr_snprint(features_data.sixlowpan_dst, sizeof(features_data.sixlowpan_dst), ipaddr);
+        if (ipaddr->u8[0] == 0xff && ipaddr->u8[1] == 0x02 && ipaddr->u8[15] == 0x1a) {
+          uiplib_ipaddr_snprint(features_data.sixlowpan_dst, sizeof(features_data.sixlowpan_dst), ipaddr);
+        } else {
+          snprintf(features_data.sixlowpan_dst, sizeof(features_data.sixlowpan_dst), "%.1x", ipaddr->u8[15]);
+        }
         features_data.flags = features_data.flags | SIXLOWPAN_DST_FLG_MSK;
         LOG_INFO("features->6lowpan.dst: %s\n", features_data.sixlowpan_dst);
       }
