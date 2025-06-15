@@ -19,7 +19,7 @@ buffer_size = 1024
 udp_server = socket.socket(family=socket.AF_INET6, type=socket.SOCK_DGRAM)
 udp_server.bind((server_ip, server_port))
 
-features_list = ["dio.version", "dio.rank", "frame.len", "6lowpan.src", "6lowpan.dst", "dio.dtsn", "dao.sequence", "ipv6.hlim", "wpan.seq_no", "ipv6.plen", "icmpv6.type", "icmpv6.code", "wpan.ack_request"]
+features_list = ["dio.version", "dio.rank", "frame.len", "6lowpan.src", "6lowpan.dst", "dio.dtsn", "dao.sequence", "ipv6.hlim", "wpan.seq_no", "ipv6.plen", "icmpv6.code", "wpan.ack_request"]
 features_dict = {k: "" for k in features_list}
 
 if write_csv:
