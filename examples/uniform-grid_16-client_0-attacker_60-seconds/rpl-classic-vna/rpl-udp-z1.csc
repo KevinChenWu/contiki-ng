@@ -47,7 +47,7 @@
       org.contikios.cooja.mspmote.Z1MoteType
       <description>Z1 Mote Type #udp client</description>
       <source>[CONFIG_DIR]/udp-client.c</source>
-      <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd05 FEATURES_SEND_INTERVAL=60</commands>
+      <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd06 FEATURES_SEND_INTERVAL=60</commands>
       <firmware>[CONFIG_DIR]/build/z1/udp-client.z1</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>
@@ -63,7 +63,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="0.0" y="0.0" />
+          <pos x="37.5" y="37.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -73,7 +73,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="0.0" y="37.5" />
+          <pos x="75.0" y="37.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -83,7 +83,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="0.0" y="75.0" />
+          <pos x="75.0" y="75.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -93,7 +93,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="0.0" y="112.5" />
+          <pos x="37.5" y="75.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -103,7 +103,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="37.5" y="0.0" />
+          <pos x="0.0" y="0.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -113,7 +113,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="37.5" y="37.5" />
+          <pos x="112.5" y="0.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -123,7 +123,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="37.5" y="75.0" />
+          <pos x="112.5" y="112.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -133,7 +133,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="37.5" y="112.5" />
+          <pos x="0.0" y="112.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -143,7 +143,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="75.0" y="0.0" />
+          <pos x="37.5" y="0.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -153,7 +153,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="75.0" y="37.5" />
+          <pos x="112.5" y="37.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -163,7 +163,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="75.0" y="75.0" />
+          <pos x="75.0" y="112.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -173,7 +173,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="75.0" y="112.5" />
+          <pos x="0.0" y="75.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -183,7 +183,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="112.5" y="0.0" />
+          <pos x="75.0" y="0.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -193,7 +193,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="112.5" y="37.5" />
+          <pos x="112.5" y="75.0" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -203,7 +203,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="112.5" y="75.0" />
+          <pos x="37.5" y="112.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -213,7 +213,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="112.5" y="112.5" />
+          <pos x="0.0" y="37.5" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -303,7 +303,7 @@ while (true) {
     org.contikios.cooja.serialsocket.SerialSocketServer
     <mote_arg>0</mote_arg>
     <plugin_config>
-      <port>60005</port>
+      <port>60006</port>
       <bound>true</bound>
     </plugin_config>
     <bounds x="0" y="401" height="126" width="362" />

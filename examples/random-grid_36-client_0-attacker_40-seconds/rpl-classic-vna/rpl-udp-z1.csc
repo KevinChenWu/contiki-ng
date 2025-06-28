@@ -47,7 +47,7 @@
       org.contikios.cooja.mspmote.Z1MoteType
       <description>Z1 Mote Type #udp client</description>
       <source>[CONFIG_DIR]/udp-client.c</source>
-      <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd15 FEATURES_SEND_INTERVAL=40</commands>
+      <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd21 FEATURES_SEND_INTERVAL=40</commands>
       <firmware>[CONFIG_DIR]/build/z1/udp-client.z1</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>
@@ -523,7 +523,7 @@ while (true) {
     org.contikios.cooja.serialsocket.SerialSocketServer
     <mote_arg>0</mote_arg>
     <plugin_config>
-      <port>60015</port>
+      <port>60021</port>
       <bound>true</bound>
     </plugin_config>
     <bounds x="0" y="401" height="126" width="362" z="2" />
