@@ -829,7 +829,6 @@
 TIMEOUT(1800000, log.testOK());
 
 while (true) {
-  log.log(time + ":" + id + ":" + msg + "\n");
   YIELD();
 }</script>
       <active>true</active>
@@ -849,7 +848,7 @@ while (true) {
     org.contikios.cooja.serialsocket.SerialSocketServer
     <mote_arg>0</mote_arg>
     <plugin_config>
-      <port>60061</port>
+      <port>60065</port>
       <bound>true</bound>
     </plugin_config>
     <bounds x="2" y="401" height="126" width="362" z="1" />

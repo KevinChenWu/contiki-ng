@@ -829,7 +829,6 @@
 TIMEOUT(1800000, log.testOK());
 
 while (true) {
-  log.log(time + ":" + id + ":" + msg + "\n");
   YIELD();
 }</script>
       <active>true</active>
