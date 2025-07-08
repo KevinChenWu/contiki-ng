@@ -95,7 +95,11 @@ expect {
         puts $expect_out(1,string)
         spawn bash
         set udp_wsn_server_id $spawn_id
-        send -i $udp_wsn_server_id "cd $udp_wsn_server_path; ./wsn_server.py -w -s ${ip_addr}::1 -c $ip_addr.csv\r"
+        if {$random_seed eq ""} {
+            send -i $udp_wsn_server_id "cd $udp_wsn_server_path; ./wsn_server.py -w -s ${ip_addr}::1 -c $ip_addr.csv\r"
+        } else {
+            send -i $udp_wsn_server_id "cd $udp_wsn_server_path; ./wsn_server.py -w -s ${ip_addr}::1 -c ${ip_addr}_${random_seed}.csv\r"
+        }
         puts "Python UDP WSN Server started"
         exp_continue
     }
