@@ -8,6 +8,7 @@ set sim_path [lindex $argv 1]
 set sim_file [lindex $argv 2]
 set ip_addr [lindex $argv 3]
 set listen_port [lindex $argv 4]
+set random_seed [lindex $argv 5]
 
 set sim_file_path "$sim_path/rpl-classic-vna/$sim_file"
 set rpl_br_path "$sim_path/rpl-border-router"
@@ -39,6 +40,12 @@ if {! [file isfile "$udp_wsn_server_path/wsn_server.py"]} {
     exit
 }
 
+if {$random_seed eq ""} {
+    puts "The random seed was not provided"
+} else {
+    puts "The random seed provided: $random_seed"
+}
+
 spawn bash
 set cooja_id $spawn_id
 send -i $cooja_id "PS1='>'\r"
@@ -51,7 +58,11 @@ expect {
 
 puts "Current working dir: $pwd"
 
-send -i $cooja_id "./gradlew run --args='--no-gui --autostart $sim_file_path'\r"
+if {$random_seed eq ""} {
+    send -i $cooja_id "./gradlew run --args='--no-gui --autostart $sim_file_path'\r"
+} else {
+    send -i $cooja_id "./gradlew run --args='--no-gui --random-seed=$random_seed --autostart $sim_file_path'\r"
+}
 
 expect {
     -timeout 15 -i $cooja_id -re ".*(Listening on port: \\d+)" {
