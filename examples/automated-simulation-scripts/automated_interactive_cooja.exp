@@ -84,7 +84,7 @@ expect {
         set rpl_br_id $spawn_id
         send -i $rpl_br_id "cd $rpl_br_path; make TARGET=z1 connect-router-cooja PREFIX=${ip_addr}::1/64 COOJA_RPL_BR_SERVER_PORT=$listen_port\r"
         expect {
-             -i $rpl_br_id -re ".*(password).*" {
+             -i $rpl_br_id -re ".*(password|contraseña).*" {
                  send -i $rpl_br_id "$password\r"
              }
         }
