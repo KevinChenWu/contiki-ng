@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import os.path
 import sys
 import pexpect
 import subprocess
 import signal
-import os
-import time
 
 os.setpgrp()
 parser = argparse.ArgumentParser()
