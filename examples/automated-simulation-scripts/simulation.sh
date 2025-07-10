@@ -12,8 +12,8 @@ read -a lines -d EOF < "$simulation_file"
 for r in "${random_seed_array[@]}"; do
     for i in "${lines[@]}"; do
         IFS=',' read -ra parts <<< "$i"
-        echo "Sending ./automated_interactive_cooja.exp $contiki_ng_path $contiki_ng_path/examples/${parts[0]} rpl-udp-z1.csc ${parts[1]} ${parts[2]} $r"
-        ./automated_interactive_cooja.exp $contiki_ng_path $contiki_ng_path/examples/${parts[0]} rpl-udp-z1.csc ${parts[1]} ${parts[2]} $r &
+        echo "Sending ./automated_interactive_cooja.py --contiki_ng_path $contiki_ng_path --sim_path $contiki_ng_path/examples/${parts[0]} --sim_file rpl-udp-z1.csc --ip_addr ${parts[1]} --listen_port ${parts[2]} --random_seed $r"
+        ./automated_interactive_cooja.py --contiki_ng_path $contiki_ng_path --sim_path $contiki_ng_path/examples/${parts[0]} --sim_file rpl-udp-z1.csc --ip_addr ${parts[1]} --listen_port ${parts[2]} --random_seed $r &
     done
     wait
 done
