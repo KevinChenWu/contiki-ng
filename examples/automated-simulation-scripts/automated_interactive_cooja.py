@@ -114,7 +114,7 @@ if listen_port_sim != listen_port:
 cooja_terminal.expect("Waiting 10 seconds for RPL Border Router to start")
 print(f"{node_id}: {cooja_terminal.match.group(0)}")
 rpl_br_terminal = subprocess.Popen(f"cd {rpl_br_path}; sudo -S make TARGET=z1 connect-router-cooja PREFIX={ip_addr}::1/64 COOJA_RPL_BR_SERVER_PORT={listen_port}", shell=True, text=True, executable="/bin/bash", stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-rpl_br_terminal.stdin.write(' \n')
+rpl_br_terminal.stdin.write(f"{password}\n")
 rpl_br_terminal.stdin.flush()
 cooja_terminal.expect("Client connected: /\\d+\\.\\d\\.\\d\\.\\d")
 print(f"{node_id}: {cooja_terminal.match.group(0)}")
