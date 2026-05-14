@@ -3,7 +3,7 @@
   <simulation>
     <title>RPL-UDP Example</title>
     <speedlimit>1.0</speedlimit>
-    <randomseed>123456</randomseed>
+    <randomseed>generated</randomseed>
     <motedelay_us>5000000</motedelay_us>
     <radiomedium>
       org.contikios.cooja.radiomediums.UDGM
@@ -16,26 +16,29 @@
       <logoutput>40000</logoutput>
     </events>
     <motetype>
-      org.contikios.cooja.mspmote.Z1MoteType
-      <description>Z1 Mote Type #border router</description>
-      <source>[CONFIG_DIR]/../rpl-border-router/border-router.c</source>
-      <commands>$(MAKE) -j$(CPUS) border-router.z1 TARGET=z1</commands>
-      <firmware>[CONFIG_DIR]/../rpl-border-router/build/z1/border-router.z1</firmware>
+      org.contikios.cooja.mspmote.SkyMoteType
+      <description>Sky Mote Type #sky1</description>
+      <source>[CONFIG_DIR]/udp-server.c</source>
+      <commands>$(MAKE) -j$(CPUS) udp-server.sky TARGET=sky</commands>
+      <firmware>[CONFIG_DIR]/build/sky/udp-server.sky</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Mote2MoteRelations</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.MoteAttributes</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspClock</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspMoteID</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspButton</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyButton</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyFlash</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.Msp802154Radio</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspDefaultSerial</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspSerial</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspLED</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspDebugOutput</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyTemperature</moteinterface>
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="17.795878999255414" y="-92.72975260548193" />
+          <pos x="30.051578821079996" y="-64.69428746901113" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -44,26 +47,29 @@
       </mote>
     </motetype>
     <motetype>
-      org.contikios.cooja.mspmote.Z1MoteType
-      <description>Z1 Mote Type #udp client</description>
+      org.contikios.cooja.mspmote.SkyMoteType
+      <description>Sky Mote Type #sky2</description>
       <source>[CONFIG_DIR]/udp-client.c</source>
-      <commands>$(MAKE) -j$(CPUS) udp-client.z1 TARGET=z1 WSN_SERVER_IP=0xfd00 FEATURES_SEND_INTERVAL=10</commands>
-      <firmware>[CONFIG_DIR]/build/z1/udp-client.z1</firmware>
+      <commands>$(MAKE) -j$(CPUS) udp-client.sky TARGET=sky</commands>
+      <firmware>[CONFIG_DIR]/build/sky/udp-client.sky</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Mote2MoteRelations</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.MoteAttributes</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspClock</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspMoteID</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspButton</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyButton</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyFlash</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.Msp802154Radio</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspDefaultSerial</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspSerial</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspLED</moteinterface>
       <moteinterface>org.contikios.cooja.mspmote.interfaces.MspDebugOutput</moteinterface>
+      <moteinterface>org.contikios.cooja.mspmote.interfaces.SkyTemperature</moteinterface>
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="30.051578821079996" y="-64.69428746901113" />
+          <pos x="21.31366587648077" y="-34.91404431659299" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -73,7 +79,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="21.31366587648077" y="-34.91404431659299" />
+          <pos x="57.165216906562264" y="-34.02362118358309" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -83,7 +89,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="57.165216906562264" y="-34.02362118358309" />
+          <pos x="75.1786320042507" y="-60.441618586411096" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -93,7 +99,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="75.1786320042507" y="-60.441618586411096" />
+          <pos x="59.11488934836" y="-7.544844766953879" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -103,7 +109,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="59.11488934836" y="-7.544844766953879" />
+          <pos x="91.720430365082" y="-22.736406051209734" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -113,7 +119,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="91.720430365082" y="-22.736406051209734" />
+          <pos x="92.90372351580778" y="2.532304558933846" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -123,49 +129,11 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="92.90372351580778" y="2.532304558933846" />
-        </interface_config>
-        <interface_config>
-          org.contikios.cooja.mspmote.interfaces.MspMoteID
-          <id>8</id>
-        </interface_config>
-      </mote>
-      <mote>
-        <interface_config>
-          org.contikios.cooja.interfaces.Position
           <pos x="120.28246466847423" y="19.133402903417824" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.mspmote.interfaces.MspMoteID
-          <id>9</id>
-        </interface_config>
-      </mote>
-    </motetype>
-    <motetype>
-      org.contikios.cooja.mspmote.Z1MoteType
-      <description>Z1 Mote Type #udp attacker</description>
-      <source>[CONFIG_DIR]/udp-attacker.c</source>
-      <commands>$(MAKE) -j$(CPUS) udp-attacker.z1 TARGET=z1 WSN_SERVER_IP=0xfd00 FEATURES_SEND_INTERVAL=10</commands>
-      <firmware>[CONFIG_DIR]/build/z1/udp-attacker.z1</firmware>
-      <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
-      <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>
-      <moteinterface>org.contikios.cooja.interfaces.Mote2MoteRelations</moteinterface>
-      <moteinterface>org.contikios.cooja.interfaces.MoteAttributes</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspClock</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspMoteID</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspButton</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.Msp802154Radio</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspDefaultSerial</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspLED</moteinterface>
-      <moteinterface>org.contikios.cooja.mspmote.interfaces.MspDebugOutput</moteinterface>
-      <mote>
-        <interface_config>
-          org.contikios.cooja.interfaces.Position
-          <pos x="69.67790019730631" y="62.36438202330873" />
-        </interface_config>
-        <interface_config>
-          org.contikios.cooja.mspmote.interfaces.MspMoteID
-          <id>10</id>
+          <id>8</id>
         </interface_config>
       </mote>
     </motetype>
@@ -176,11 +144,9 @@
       <skin>org.contikios.cooja.plugins.skins.IDVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.UDGMVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.AttributeVisualizerSkin</skin>
-      <skin>org.contikios.cooja.plugins.skins.TrafficVisualizerSkin</skin>
-      <skin>org.contikios.cooja.plugins.skins.GridVisualizerSkin</skin>
-      <viewport>0.9964622770251798 0.0 0.0 0.9964622770251798 42.2050696304944 100.12897315651286</viewport>
+      <viewport>1.3598488697820064 0.0 0.0 1.3598488697820064 6.142207908179105 118.20877091196155</viewport>
     </plugin_config>
-    <bounds x="14" y="210" height="227" width="234" z="3" />
+    <bounds x="14" y="210" height="227" width="234" z="2" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.LogListener
@@ -189,7 +155,7 @@
       <formatted_time />
       <coloring />
     </plugin_config>
-    <bounds x="759" y="7" height="556" width="1011" z="5" />
+    <bounds x="759" y="7" height="556" width="1011" z="1" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.TimeLine
@@ -202,14 +168,12 @@
       <mote>5</mote>
       <mote>6</mote>
       <mote>7</mote>
-      <mote>8</mote>
-      <mote>9</mote>
       <showRadioRXTX />
       <showRadioHW />
       <showLEDs />
       <zoomfactor>681.712557066089</zoomfactor>
     </plugin_config>
-    <bounds x="0" y="567" height="352" width="1804" z="4" />
+    <bounds x="0" y="567" height="352" width="1804" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.RadioLogger
@@ -217,35 +181,6 @@
       <split>150</split>
       <formatted_time />
     </plugin_config>
-    <bounds x="259" y="12" height="546" width="500" z="1" />
-  </plugin>
-  <plugin>
-    org.contikios.cooja.serialsocket.SerialSocketServer
-    <mote_arg>0</mote_arg>
-    <plugin_config>
-      <port>60001</port>
-      <bound>true</bound>
-    </plugin_config>
-    <bounds x="0" y="0" height="126" width="362" z="2" />
-  </plugin>
-  <plugin>
-    org.contikios.cooja.plugins.ScriptRunner
-    <plugin_config>
-      <script>/*
- * Example Contiki test script (JavaScript).
- * A Contiki test script acts on mote output, such as via printf()'s.
- * The script may operate on the following variables:
- *  Mote mote, int id, String msg
- */
-
-TIMEOUT(60000, log.testOK());
-
-while (true) {
-  log.log(time + ":" + id + ":" + msg + "\n");
-  YIELD();
-}</script>
-      <active>true</active>
-    </plugin_config>
-    <bounds x="896" y="136" height="700" width="600" />
+    <bounds x="259" y="12" height="546" width="500" z="3" />
   </plugin>
 </simconf>
