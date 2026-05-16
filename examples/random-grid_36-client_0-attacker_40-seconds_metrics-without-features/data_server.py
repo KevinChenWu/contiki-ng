@@ -46,8 +46,8 @@ while True:
             else:
                 data_list = data.split(",")
                 metrics_dict = {metrics_list[i]: data_list[i].strip() for i in range(len(metrics_list)-1)}
-                metrics_dict["timestamp_start"] = int(metrics_dict["timestamp_start"]) + timestamp_dict.get(node_id, mode(timestamp_dict.values()))
-                metrics_dict["timestamp_end"] = current_time
+                metrics_dict["timestamp_start"] = str(int(metrics_dict["timestamp_start"]) + timestamp_dict.get(node_id, mode(timestamp_dict.values())))
+                metrics_dict["timestamp_end"] = str(current_time)
                 csv_file_handler.write(",".join(metrics_dict.values()) + "\n")
                 print(f"Node ID: {metrics_dict['node.id']}, Node IP: \"{address[0]}\", data_list: \"{data_list}\", metrics_dict: \"{metrics_dict}\"")
     else:
@@ -63,6 +63,6 @@ while True:
             data_list = data.split(",")
             metrics_dict = {metrics_list[i]: data_list[i].strip() for i in range(len(metrics_list)-1)}
             print(node_id)
-            metrics_dict["timestamp_start"] = int(metrics_dict["timestamp_start"]) + timestamp_dict.get(node_id, mode(timestamp_dict.values()))
-            metrics_dict["timestamp_end"] = current_time
+            metrics_dict["timestamp_start"] = str(int(metrics_dict["timestamp_start"]) + timestamp_dict.get(node_id, mode(timestamp_dict.values())))
+            metrics_dict["timestamp_end"] = str(current_time)
             print(f"Node ID: {metrics_dict['node.id']}, Node IP: \"{address[0]}\", data_list: \"{data_list}\", metrics_dict: \"{metrics_dict}\"")
