@@ -29,7 +29,6 @@ struct data features_data;
 static uint64_t last_tx, last_rx, last_time, last_cpu, last_lpm, last_deep_lpm;
 static uint32_t time_offset = 0;
 static uint32_t seqno = 0;
-rpl_instance_t *inst;
 /*---------------------------------------------------------------------------*/
 int hex_to_bin(char* c) {
   int val = 0;
@@ -86,6 +85,7 @@ static void data_struct_init(struct data features_data) {
 PROCESS_THREAD(udp_client_process, ev, data)
 {
   static struct etimer periodic_timer;
+  static struct stimer metrics_timer;
   static char str[200];
   uip_ipaddr_t dest_ipaddr;
   uip_ipaddr_t wsn_server_ipaddr;
@@ -112,6 +112,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
                       UDP_SERVER_PORT, udp_rx_callback);
 
   etimer_set(&periodic_timer, SEND_INTERVAL);
+  stimer_set(&metrics_timer, 131);
   
   while(1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
@@ -126,50 +127,45 @@ PROCESS_THREAD(udp_client_process, ev, data)
         simple_udp_sendto(&udp_conn, str, strlen(str), &data_server_ipaddr);
       }
       
-      inst = rpl_get_default_instance();
-      
       uip_ip6addr(&wsn_server_ipaddr, WSN_SERVER_IP, 0, 0, 0, 0, 0, 0, 1);
-      snprintf(features, sizeof(features), "%05lX,%.1d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", features_data.flags, node_id, features_data.dio_version, features_data.dio_rank, features_data.frame_len, features_data.sixlowpan_src, features_data.sixlowpan_dst, features_data.dio_dtsn, features_data.dao_sequence, features_data.ipv6_hlim, features_data.wpan_seq_no, features_data.ipv6_plen, features_data.icmpv6_code, features_data.wpan_ack_request);
-      simple_udp_sendto(&udp_conn, features, strlen(features), &wsn_server_ipaddr);
-      data_struct_init(features_data);
-      LOG_INFO("Sending features to ");
-      LOG_INFO_6ADDR(&wsn_server_ipaddr);
-      LOG_INFO_("\n");
+      //snprintf(features, sizeof(features), "%05lX,%.1d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", features_data.flags, node_id, features_data.dio_version, features_data.dio_rank, features_data.frame_len, features_data.sixlowpan_src, features_data.sixlowpan_dst, features_data.dio_dtsn, features_data.dao_sequence, features_data.ipv6_hlim, features_data.wpan_seq_no, features_data.ipv6_plen, features_data.icmpv6_code, features_data.wpan_ack_request);
+      //simple_udp_sendto(&udp_conn, features, strlen(features), &wsn_server_ipaddr);
+      //data_struct_init(features_data);
+      //LOG_INFO("Sending features to ");
+      //LOG_INFO_6ADDR(&wsn_server_ipaddr);
+      //LOG_INFO_("\n");
       
-      rpl_parent_t *prnt = inst->current_dag->preferred_parent;
-      uint16_t rank = rpl_rank_via_parent(prnt);
-      uint16_t prnt_etx = rpl_get_parent_link_metric(prnt);
-      int nbr_num = uip_ds6_nbr_num();
-      uint8_t beacon = inst->dio_intcurrent;
-      
-      uint64_t curr_tx, curr_rx, curr_time, curr_cpu, curr_lpm, curr_deep_lpm;
-      uint64_t delta_time;
-      
-      energest_flush();
-
-      curr_time = ENERGEST_GET_TOTAL_TIME();
-      curr_cpu = energest_type_time(ENERGEST_TYPE_CPU);
-      curr_lpm = energest_type_time(ENERGEST_TYPE_LPM);
-      curr_deep_lpm = energest_type_time(ENERGEST_TYPE_DEEP_LPM);
-      curr_tx = energest_type_time(ENERGEST_TYPE_TRANSMIT);
-      curr_rx = energest_type_time(ENERGEST_TYPE_LISTEN);
-
-      delta_time = MAX(curr_time - last_time, 1);
-      
-      temperature = 21 + (random_rand() % (29 - 21 + 1));
-      uip_ip6addr(&data_server_ipaddr, 0xfdff, 0, 0, 0, 0, 0, 0, 1);
-      LOG_INFO("Sending data to ");
-      LOG_INFO_6ADDR(&data_server_ipaddr);
-      LOG_INFO_("\n");
-      snprintf(str, sizeof(str), "%"PRIu32",%"PRIu16",%"PRIu32",%u,%"PRIu16",%"PRIu16",%"PRIu16",%d,%"PRIu8",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu32, clock_seconds(), node_id, seqno++, rpl_parent_get_ipaddr(prnt)->u8[15], rank, prnt->rank, prnt_etx, nbr_num, beacon, curr_cpu-last_cpu, curr_lpm-last_lpm, curr_deep_lpm-last_deep_lpm, curr_tx-last_tx, curr_rx-last_rx, delta_time, temperature);
-      simple_udp_sendto(&udp_conn, str, strlen(str), &data_server_ipaddr);
-      
-      last_time = curr_time;
-      last_cpu = curr_cpu;
-      last_lpm = curr_lpm;
-      last_deep_lpm = curr_deep_lpm;
-      last_tx = curr_tx;
-      last_rx = curr_rx;
+      if(stimer_expired(&metrics_timer)) {
+        uint64_t curr_tx, curr_rx, curr_time, curr_cpu, curr_lpm, curr_deep_lpm;
+        uint64_t delta_time;
+        
+        energest_flush();
+        
+        curr_time = ENERGEST_GET_TOTAL_TIME();
+        curr_cpu = energest_type_time(ENERGEST_TYPE_CPU);
+        curr_lpm = energest_type_time(ENERGEST_TYPE_LPM);
+        curr_deep_lpm = energest_type_time(ENERGEST_TYPE_DEEP_LPM);
+        curr_tx = energest_type_time(ENERGEST_TYPE_TRANSMIT);
+        curr_rx = energest_type_time(ENERGEST_TYPE_LISTEN);
+        
+        delta_time = MAX(curr_time - last_time, 1);
+        
+        temperature = 21 + (random_rand() % (29 - 21 + 1));
+        uip_ip6addr(&data_server_ipaddr, 0xfdff, 0, 0, 0, 0, 0, 0, 1);
+        LOG_INFO("Sending data to ");
+        LOG_INFO_6ADDR(&data_server_ipaddr);
+        LOG_INFO_("\n");
+        snprintf(str, sizeof(str), "%"PRIu32",%"PRIu16",%"PRIu32",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu32, clock_seconds(), node_id, seqno++, curr_cpu-last_cpu, curr_lpm-last_lpm, curr_deep_lpm-last_deep_lpm, curr_tx-last_tx, curr_rx-last_rx, delta_time, temperature);
+        simple_udp_sendto(&udp_conn, str, strlen(str), &data_server_ipaddr);
+        
+        last_time = curr_time;
+        last_cpu = curr_cpu;
+        last_lpm = curr_lpm;
+        last_deep_lpm = curr_deep_lpm;
+        last_tx = curr_tx;
+        last_rx = curr_rx;
+        stimer_reset(&metrics_timer);
+      }
       
     } else {
       LOG_INFO("Not reachable yet\n");
