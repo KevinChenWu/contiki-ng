@@ -500,10 +500,21 @@
  *  Mote mote, int id, String msg
  */
 
-TIMEOUT(1800000, log.testOK());
+var FileWriter = Java.type("java.io.FileWriter");
+
+my_output = new FileWriter("uniform-grid_36-client_0-attacker_30-seconds_metrics-without-features.csv");
+
+TIMEOUT(1800000, my_output.close(); log.testOK());
+
+var target = "UDP PAYLOAD: ";
+var target_len = target.length();
 
 while (true) {
   YIELD();
+  if (id == 1 &amp;&amp; msg.contains(target)) {
+    log.log("time: " + time + ", msg: " + msg.substring(msg.indexOf(target)) + "\n");
+    my_output.write(msg.substring(msg.indexOf(target) + target_len) + "\n");
+  }
 }</script>
       <active>true</active>
     </plugin_config>

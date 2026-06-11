@@ -1230,6 +1230,13 @@ uip_process(uint8_t flag)
   LOG_INFO_(" to ");
   LOG_INFO_6ADDR(&UIP_IP_BUF->destipaddr);
   LOG_INFO_("\n");
+  
+  if (UIP_IP_BUF->destipaddr.u8[0] == 0xfd && UIP_IP_BUF->destipaddr.u8[1] == 0xff && UIP_IP_BUF->destipaddr.u8[15] == 0x1) {
+    char temp_buf[7];
+    snprintf(temp_buf, sizeof(temp_buf), "%06"PRIu32, clock_time());
+    memcpy(UIP_UDP_PAYLOAD + 7, temp_buf, 6);
+    LOG_INFO("UDP PAYLOAD: %s\n", UIP_UDP_PAYLOAD);
+  }
 
   if(uip_is_addr_mcast(&UIP_IP_BUF->srcipaddr)){
     UIP_STAT(++uip_stat.ip.drop);

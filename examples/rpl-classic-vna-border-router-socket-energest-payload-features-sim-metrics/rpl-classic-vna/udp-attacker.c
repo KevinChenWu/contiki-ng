@@ -14,7 +14,6 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-#define WITH_SERVER_REPLY  1
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
 
@@ -23,7 +22,7 @@
 static struct simple_udp_connection udp_conn;
 //static uint32_t rx_count = 0;
 uint8_t vna_mode = 0;
-char features[UIP_CONF_BUFFER_SIZE - 56 + 1] = "00000,   ,     ,   ,                 ,                 ,   ,   ,   ,   ,   ,   ,   , ,                                                                                                                                                                                                                                                                                                                                                                                  ";
+char features[67] = "00000,  ,   ,     ,   ,        ,        ,   ,   ,   ,   ,   ,   , ";
 struct data features_data;
 /*---------------------------------------------------------------------------*/
 int hex_to_bin(char* c) {
@@ -93,7 +92,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
 {
   static struct etimer periodic_timer;
   static struct stimer attack_timer;
-  static char str[32];
+  static char str[64];
   uip_ipaddr_t dest_ipaddr;
   uip_ipaddr_t wsn_server_ipaddr;
   uip_ipaddr_t data_server_ipaddr;

@@ -41,7 +41,6 @@ sim_file_path = f"{sim_path}/rpl-classic-vna/{sim_file}"
 rpl_br_path = f"{sim_path}/rpl-border-router"
 udp_server_path = f"{sim_path}"
 password = " "
-metrics_file_name = os.path.basename(os.path.normpath(sim_path))
 
 if sim_file is None:
     print("The file sim_file is not provided. Exiting")
@@ -117,7 +116,7 @@ print(f"{node_id}: {cooja_terminal.match.group(0)}")
 cooja_terminal.expect("Waiting 10 seconds for Python UDP WSN Server to start")
 print(f"{node_id}: {cooja_terminal.match.group(0)}")
 udp_wsn_terminal = subprocess.Popen(f"cd {udp_server_path}; ./wsn_server.py -w -s {ip_addr}::1 -c {ip_addr}_features.csv", shell=True, text=True, executable="/bin/bash", stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-udp_data_terminal = subprocess.Popen(f"cd {udp_server_path}; ./data_server.py -w -c {metrics_file_name}.csv", shell=True, text=True, executable="/bin/bash", stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+udp_data_terminal = subprocess.Popen(f"cd {udp_server_path}; ./data_server.py", shell=True, text=True, executable="/bin/bash", stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
 cooja_terminal.expect("Starting simulation")
 print(f"{node_id}: {cooja_terminal.match.group(0)}")

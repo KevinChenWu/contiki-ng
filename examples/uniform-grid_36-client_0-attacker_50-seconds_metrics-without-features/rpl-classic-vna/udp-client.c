@@ -11,12 +11,9 @@
 #include "sys/energest.h"
 #include "sys/node-id.h"
 
-#include "net/routing/rpl-classic/rpl-private.h"
-
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-#define WITH_SERVER_REPLY  1
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
 
@@ -24,10 +21,9 @@
 
 static struct simple_udp_connection udp_conn;
 uint8_t vna_mode = 0;
-char features[UIP_CONF_BUFFER_SIZE - 56 + 1] = "00000,   ,     ,   ,                 ,                 ,   ,   ,   ,   ,   ,   ,   , ,                                                                                                                                                                                                                                                                                                                                                                                  ";
+char features[67] = "00000,  ,   ,     ,   ,        ,        ,   ,   ,   ,   ,   ,   , ";
 struct data features_data;
-static uint64_t last_tx, last_rx, last_time, last_cpu, last_lpm, last_deep_lpm;
-static uint32_t time_offset = 0;
+static uint64_t last_tx, last_rx, last_time, last_cpu, last_lpm;
 static uint32_t seqno = 0;
 /*---------------------------------------------------------------------------*/
 int hex_to_bin(char* c) {
@@ -86,7 +82,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
 {
   static struct etimer periodic_timer;
   static struct stimer metrics_timer;
-  static char str[200];
+  static char str[64];
   uip_ipaddr_t dest_ipaddr;
   uip_ipaddr_t wsn_server_ipaddr;
   uip_ipaddr_t data_server_ipaddr;
@@ -100,7 +96,6 @@ PROCESS_THREAD(udp_client_process, ev, data)
   last_time = ENERGEST_GET_TOTAL_TIME();
   last_cpu = energest_type_time(ENERGEST_TYPE_CPU);
   last_lpm = energest_type_time(ENERGEST_TYPE_LPM);
-  last_deep_lpm = energest_type_time(ENERGEST_TYPE_DEEP_LPM);
   last_tx = energest_type_time(ENERGEST_TYPE_TRANSMIT);
   last_rx = energest_type_time(ENERGEST_TYPE_LISTEN);
   
@@ -112,20 +107,13 @@ PROCESS_THREAD(udp_client_process, ev, data)
                       UDP_SERVER_PORT, udp_rx_callback);
 
   etimer_set(&periodic_timer, SEND_INTERVAL);
-  stimer_set(&metrics_timer, 131);
+  stimer_set(&metrics_timer, 30);
   
   while(1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
 
     if(NETSTACK_ROUTING.node_has_joined() && NETSTACK_ROUTING.node_is_reachable() &&
         NETSTACK_ROUTING.get_root_ipaddr(&dest_ipaddr)) {
-      
-      if (time_offset == 0) {
-        time_offset = clock_seconds();
-        uip_ip6addr(&data_server_ipaddr, 0xfdff, 0, 0, 0, 0, 0, 0, 1);
-        snprintf(str, sizeof(str), "Current clock time: %"PRIu32, time_offset);
-        simple_udp_sendto(&udp_conn, str, strlen(str), &data_server_ipaddr);
-      }
       
       uip_ip6addr(&wsn_server_ipaddr, WSN_SERVER_IP, 0, 0, 0, 0, 0, 0, 1);
       //snprintf(features, sizeof(features), "%05lX,%.1d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", features_data.flags, node_id, features_data.dio_version, features_data.dio_rank, features_data.frame_len, features_data.sixlowpan_src, features_data.sixlowpan_dst, features_data.dio_dtsn, features_data.dao_sequence, features_data.ipv6_hlim, features_data.wpan_seq_no, features_data.ipv6_plen, features_data.icmpv6_code, features_data.wpan_ack_request);
@@ -136,7 +124,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
       //LOG_INFO_("\n");
       
       if(stimer_expired(&metrics_timer)) {
-        uint64_t curr_tx, curr_rx, curr_time, curr_cpu, curr_lpm, curr_deep_lpm;
+        uint64_t curr_tx, curr_rx, curr_time, curr_cpu, curr_lpm;
         uint64_t delta_time;
         
         energest_flush();
@@ -144,7 +132,6 @@ PROCESS_THREAD(udp_client_process, ev, data)
         curr_time = ENERGEST_GET_TOTAL_TIME();
         curr_cpu = energest_type_time(ENERGEST_TYPE_CPU);
         curr_lpm = energest_type_time(ENERGEST_TYPE_LPM);
-        curr_deep_lpm = energest_type_time(ENERGEST_TYPE_DEEP_LPM);
         curr_tx = energest_type_time(ENERGEST_TYPE_TRANSMIT);
         curr_rx = energest_type_time(ENERGEST_TYPE_LISTEN);
         
@@ -155,13 +142,12 @@ PROCESS_THREAD(udp_client_process, ev, data)
         LOG_INFO("Sending data to ");
         LOG_INFO_6ADDR(&data_server_ipaddr);
         LOG_INFO_("\n");
-        snprintf(str, sizeof(str), "%"PRIu32",%"PRIu16",%"PRIu32",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu64",%"PRIu32, clock_seconds(), node_id, seqno++, curr_cpu-last_cpu, curr_lpm-last_lpm, curr_deep_lpm-last_deep_lpm, curr_tx-last_tx, curr_rx-last_rx, delta_time, temperature);
+        snprintf(str, sizeof(str), "%06"PRIu32",%06d,%02"PRIu16",%03"PRIu32",%07"PRIu64",%07"PRIu64",%07"PRIu64",%07"PRIu64",%07"PRIu64",%02"PRIu32, clock_time(), 0, node_id, seqno++, curr_cpu-last_cpu, curr_lpm-last_lpm, curr_tx-last_tx, curr_rx-last_rx, delta_time, temperature);
         simple_udp_sendto(&udp_conn, str, strlen(str), &data_server_ipaddr);
         
         last_time = curr_time;
         last_cpu = curr_cpu;
         last_lpm = curr_lpm;
-        last_deep_lpm = curr_deep_lpm;
         last_tx = curr_tx;
         last_rx = curr_rx;
         stimer_reset(&metrics_timer);
