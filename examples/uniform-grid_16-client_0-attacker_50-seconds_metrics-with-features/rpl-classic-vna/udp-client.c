@@ -107,7 +107,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
                       UDP_SERVER_PORT, udp_rx_callback);
 
   etimer_set(&periodic_timer, SEND_INTERVAL);
-  etimer_set(&metrics_timer, 15360);
+  etimer_set(&metrics_timer, 11520);
   
   while(1) {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer)||etimer_expired(&metrics_timer));
@@ -142,7 +142,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
         last_lpm = curr_lpm;
         last_tx = curr_tx;
         last_rx = curr_rx;
-        etimer_set(&metrics_timer, 15360);
+        etimer_set(&metrics_timer, 11520);
       }
       
       if(etimer_expired(&periodic_timer)) {
